@@ -1,0 +1,25 @@
+@url = http://localhost:8080
+
+# @name createUser
+POST {{url}}/users/create
+Content-Type: application/json
+
+{
+    "FirstName": "John4",
+    "LastName": "Doe1",
+    "Email": "asd1@ads.com",
+    "Password": "123456"
+}
+###
+
+# @name getUser
+GET {{url}}/users/4
+Content-Type: application/json
+
+###
+
+# @name getUsers
+POST {{url}}/users/get
+Content-Type: application/json
+
+###
