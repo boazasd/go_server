@@ -16,9 +16,6 @@ func Init() {
 	component := templates.Hello("Shirit")
 	router.GET("/hello", gin.WrapH(templ.Handler(component)))
 
-	usersComponent := templates.Users([]string{"one", "two", "three"})
-	router.GET("/users", gin.WrapH(templ.Handler(usersComponent)))
-
 	usersInit()
 	router.Run(":8080")
 }
