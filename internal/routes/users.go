@@ -28,15 +28,14 @@ func getUser(c *gin.Context) {
 	}
 }
 
-func getUsers(c *gin.Context){
+func getUsers(c *gin.Context) {
 	users, err := services.GetUsers()
 	if err != nil {
 		errorComponent := templates.Error(err.Error())
-		errorComponent.Render(c.Request.Context(),c.Writer)
+		errorComponent.Render(c.Request.Context(), c.Writer)
 	}
 	usersComponent := templates.Users(users)
-	usersComponent.Render(c.Request.Context(),   
-	c.Writer)
+	usersComponent.Render(c.Request.Context(), c.Writer)
 }
 
 func createUser(c *gin.Context) {
