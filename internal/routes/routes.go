@@ -16,6 +16,8 @@ func Init() {
 	router.GET("/favicon.ico", func(c *gin.Context) {
 		c.String(200, "")
 	})
+	router.NoRoute(gin.WrapH(templ.Handler(templates.NotFound())))
+
 	component := templates.Login()
 	router.GET("/", gin.WrapH(templ.Handler(component)))
 

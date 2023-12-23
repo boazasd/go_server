@@ -3,6 +3,7 @@ package routes
 import (
 	"bez/bez_server/internal/models"
 	"bez/bez_server/internal/services"
+	"bez/bez_server/internal/utils"
 	"bez/bez_server/templates"
 	"strconv"
 
@@ -11,7 +12,8 @@ import (
 
 func usersInit() {
 	router.GET("/users/getOne/:id", getUser)
-	router.GET("/users/get", getUsers)
+	router.GET("/users", getUsers)
+	router.POST("/users/login", loginUser)
 	router.POST("/users/create", createUser)
 	router.POST("/users/update", updateUser)
 	router.DELETE("/users/delete/:id", deleteUser)
@@ -50,7 +52,8 @@ func createUser(c *gin.Context) {
 		c.JSON(400, gin.H{"Error": err.Error()})
 		return
 	}
-	println(user.FirstName, user.LastName, user.Email, user.Password)
+
+	user.Password = utils.HashAndSalt([]byte(user.Password))
 	userId, err := services.CreateUser(user)
 
 	if err != nil {
@@ -66,4 +69,18 @@ func updateUser(c *gin.Context) {
 
 func deleteUser(c *gin.Context) {
 	c.JSON(200, gin.H{"message": "delete user"})
+}
+
+func loginUser(c *gin.Context) {
+	email := c.PostForm("email")
+	password := c.PostForm("password")
+
+	err := services.Login(email, password)
+
+	if err != nil {
+		errorComponent := templates.Error(err.Error())
+		errorComponent.Render(c.Request.Context(), c.Writer)
+	} else {
+		c.String(200, "Success")
+	}
 }

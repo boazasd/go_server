@@ -51,7 +51,7 @@ func CreateUser(user User) (int64, error) {
 	return id, nil
 }
 
-func GetUser(id int) (User, error) {
+func GetUserById(id int) (User, error) {
 	q, err := DB.Prepare("SELECT * FROM users WHERE id = ?")
 
 	if err != nil {
@@ -60,6 +60,23 @@ func GetUser(id int) (User, error) {
 
 	user := User{}
 	err = q.QueryRow(id).Scan(&user.Id, &user.FirstName, &user.LastName, &user.Email, &user.Password)
+
+	if err != nil {
+		return User{}, err
+	}
+
+	return user, nil
+}
+
+func GetUserByEmail(email string) (User, error) {
+	q, err := DB.Prepare("SELECT * FROM users WHERE email = ?")
+
+	if err != nil {
+		return User{}, err
+	}
+
+	user := User{}
+	err = q.QueryRow(email).Scan(&user.Id, &user.FirstName, &user.LastName, &user.Email, &user.Password)
 
 	if err != nil {
 		return User{}, err
