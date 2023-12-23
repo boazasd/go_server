@@ -1,0 +1,15 @@
+package templates
+
+templ Login(){
+    <html>
+    @Head()
+    <body>
+        <h1>Login</h1>
+        <form action="/users/get/" method="get">
+            <input type="text" name="username" placeholder="Username" />
+            <input type="password" name="password" placeholder="Password" />
+            <input type="submit"  value="Login" />
+        </form>
+    </body>
+    </html>
+}

@@ -13,8 +13,11 @@ func Init() {
 	router.GET("/v", func(c *gin.Context) {
 		c.String(200, "v0.0.2")
 	})
-	component := templates.Hello("Shirit")
-	router.GET("/hello", gin.WrapH(templ.Handler(component)))
+	router.GET("/favicon.ico", func(c *gin.Context) {
+		c.String(200, "")
+	})
+	component := templates.Login()
+	router.GET("/", gin.WrapH(templ.Handler(component)))
 
 	usersInit()
 	router.Run(":8080")

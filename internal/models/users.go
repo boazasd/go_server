@@ -68,8 +68,17 @@ func GetUser(id int) (User, error) {
 	return user, nil
 }
 
-func GetUsers() ([]User, error) {
-	q, err := DB.Prepare("SELECT * FROM users")
+func GetUsers(sort string, dir string) ([]User, error) {
+	if sort == "" {
+		sort = "id"
+	}
+	if dir == "" {
+		dir = "ASC"
+	}
+	qString := fmt.Sprintf("SELECT * FROM users ORDER BY %s %s", sort, dir)
+
+	q, err := DB.Prepare(qString)
+
 	users := []User{}
 
 	if err != nil {

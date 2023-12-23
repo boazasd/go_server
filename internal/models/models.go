@@ -44,3 +44,8 @@ func ConnectDatabse() error {
 	DB = db
 	return nil
 }
+
+type query struct {
+	sort      string
+	direction string
+}

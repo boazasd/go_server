@@ -29,11 +29,16 @@ func getUser(c *gin.Context) {
 }
 
 func getUsers(c *gin.Context) {
-	users, err := services.GetUsers()
+	sort := c.Query("sort")
+	dir := c.Query("dir")
+	users, err := services.GetUsers(sort, dir)
 	if err != nil {
 		errorComponent := templates.Error(err.Error())
 		errorComponent.Render(c.Request.Context(), c.Writer)
 	}
+
+	print("length",
+		len(users))
 	usersComponent := templates.Users(users)
 	usersComponent.Render(c.Request.Context(), c.Writer)
 }

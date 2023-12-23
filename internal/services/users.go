@@ -23,7 +23,7 @@ func CreateUser(user models.User) (int64, error) {
 	}
 }
 
-func GetUsers() ([]models.User, error) {
-	users, err := models.GetUsers()
+func GetUsers(sort string, dir string) ([]models.User, error) {
+	users, err := models.GetUsers(sort, dir)
 	return users, err
 }
