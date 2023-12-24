@@ -31,6 +31,8 @@ func CreateDatabase() error {
 		os.Exit(1)
 	}
 
+	_, err = db.Exec("CREATE TABLE IF NOT EXISTS sessions (id INTEGER PRIMARY KEY, session_id TEXT NOT NULL UNIQUE, user_id INTEGER NOT NULL, expiration_time TEXT NOT NULL)")
+
 	db.Close()
 	return nil
 }

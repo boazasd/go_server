@@ -12,13 +12,21 @@ func IsValidField(field string) bool {
 	return valid.MatchString(field)
 }
 
-func HashAndSalt(pwd []byte) string {
-	hash, err := bcrypt.GenerateFromPassword(pwd, 8)
+func HashAndSalt(str []byte) string {
+	hash, err := bcrypt.GenerateFromPassword(str, 8)
 	if err != nil {
 		log.Println(err)
 	}
 	return string(hash)
 }
+
+// func Hash(str string) string {
+// 	hash, err := hash.Hash(str)
+// 	if err != nil {
+// 		log.Println(err)
+// 	}
+// 	return string(hash)
+// }
 
 func ComparePasswords(hashedPwd string, plainPwd []byte) bool { // Since we'll be getting the hashed password from the DB it
 	// will be a string so we'll need to convert it to a byte slice
