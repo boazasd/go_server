@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"crypto/sha256"
 	"log"
 	"regexp"
 
@@ -20,13 +21,12 @@ func HashAndSalt(str []byte) string {
 	return string(hash)
 }
 
-// func Hash(str string) string {
-// 	hash, err := hash.Hash(str)
-// 	if err != nil {
-// 		log.Println(err)
-// 	}
-// 	return string(hash)
-// }
+func Hash(str []byte) string {
+	h := sha256.New()
+	h.Write(str)
+	hash := h.Sum(nil)
+	return string(hash)
+}
 
 func ComparePasswords(hashedPwd string, plainPwd []byte) bool { // Since we'll be getting the hashed password from the DB it
 	// will be a string so we'll need to convert it to a byte slice
