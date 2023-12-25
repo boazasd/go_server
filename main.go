@@ -8,5 +8,6 @@ import (
 func main() {
 	models.CreateDatabase()
 	models.ConnectDatabse()
+	defer models.CloseDatabase()
 	routes.Init()
 }

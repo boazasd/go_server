@@ -20,12 +20,15 @@ func CreateDatabase() error {
 	}
 
 	db, err := sql.Open("sqlite3", "./data/data.db")
+	defer db.Close()
+
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}
 
 	_, err = db.Exec("CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY, first_name TEXT NOT NULL, last_name TEXT NOT NULL, email TEXT NOT NULL UNIQUE, password TEXT NOT NULL)")
+
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
@@ -33,7 +36,11 @@ func CreateDatabase() error {
 
 	_, err = db.Exec("CREATE TABLE IF NOT EXISTS sessions (id INTEGER PRIMARY KEY, session_id TEXT NOT NULL UNIQUE, user_id INTEGER NOT NULL, expiration_time TEXT NOT NULL)")
 
-	db.Close()
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+
 	return nil
 }
 
@@ -45,6 +52,10 @@ func ConnectDatabse() error {
 
 	DB = db
 	return nil
+}
+
+func CloseDatabase() {
+	DB.Close()
 }
 
 type query struct {

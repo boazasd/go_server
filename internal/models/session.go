@@ -1,53 +1,74 @@
 package models
 
 import (
-	"bez/bez_server/internal/utils"
 	"time"
-
-	"github.com/google/uuid"
 )
 
 type Session struct {
 	Id             string
 	SessionId      string
 	UserId         int64
-	expirationTime time.Time
+	ExpirationTime time.Time
 }
 
-var expirationTime = time.Hour
-var refreshWindow = time.Minute * 20
-
-func createSession(userId int64) (int, error) {
+func CreateSession(session Session) error {
 
 	tx, err := DB.Begin()
 	if err != nil {
-		return -1, err
+		return err
 	}
 
-	uuid := uuid.New()
-	session := Session{
-		SessionId:      utils.Hash([]byte(uuid.String())),
-		UserId:         userId,
-		expirationTime: time.Now().Add(expirationTime),
+	q, err := tx.Prepare("INSERT INTO sessions (sessionId, userId, expirationTime) VALUES (?, ?, ?)")
+
+	if err != nil {
+		return err
 	}
 
-	q, err := tx.Prepare("INSERT INTO sessions (first_name, last_name, email, password) VALUES (?, ?, ?, ?)")
-	print(session)
-}
+	defer q.Close()
 
-func getSession(sessionId string) Session {
-	session := Session{
-		SessionId: sessionId,
+	_, err = q.Exec(session.SessionId, session.UserId, session.ExpirationTime)
+
+	if err != nil {
+		return err
 	}
 
-	return session
+	tx.Commit()
+
+	return nil
 }
 
-func updateSession(sessionId string) {
+func GetSession(sessionId string) (Session, error) {
+	q, err := DB.Prepare("SELECT * FROM sessions WHERE sessionId = ?")
 
+	if err != nil {
+		return Session{}, err
+	}
+
+	session := Session{}
+	err = q.QueryRow(sessionId).Scan(&session.Id, &session.SessionId, &session.UserId, &session.ExpirationTime)
+
+	if err != nil {
+		return Session{}, err
+	}
+
+	return session, nil
 }
 
-func checkSession(sessionId string) bool {
+func UpdateSession(session Session) error {
+	q, err := DB.Prepare(`
+	UPDATE sessions 
+	SET expirationTime = $2
+	WHERE id = $1`)
 
-	return true
+	if err != nil {
+		return err
+	}
+
+	_, err = q.Exec(session.Id, session.ExpirationTime)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

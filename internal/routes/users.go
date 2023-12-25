@@ -5,9 +5,10 @@ import (
 	"bez/bez_server/internal/services"
 	"bez/bez_server/internal/utils"
 	"bez/bez_server/templates"
+	"encoding/json"
 	"strconv"
 
-	"github.com/gin-gonic/gin"
+	"github.com/labstack/echo/v4"
 )
 
 func usersInit() {
@@ -19,68 +20,70 @@ func usersInit() {
 	router.DELETE("/users/delete/:id", deleteUser)
 }
 
-func getUser(c *gin.Context) {
+func getUser(c echo.Context) error {
 	id, err := strconv.Atoi(c.Param("id"))
 
 	user, err := services.GetUser(id)
 	if err != nil {
-		c.JSON(400, gin.H{"message": err.Error()})
+		return c.JSON(400, err.Error())
 	} else {
-		c.JSON(200, user)
+		return c.JSON(200, user)
 	}
 }
 
-func getUsers(c *gin.Context) {
-	sort := c.Query("sort")
-	dir := c.Query("dir")
+func getUsers(c echo.Context) error {
+	sort := c.QueryParam("sort")
+	dir := c.QueryParam("dir")
 	users, err := services.GetUsers(sort, dir)
 	if err != nil {
 		errorComponent := templates.Error(err.Error())
-		errorComponent.Render(c.Request.Context(), c.Writer)
+		errorComponent.Render(c.Request().Context(), c.Response().Writer)
 	}
 
-	print("length",
-		len(users))
 	usersComponent := templates.Users(users)
-	usersComponent.Render(c.Request.Context(), c.Writer)
+	usersComponent.Render(c.Request().Context(), c.Response().Writer)
+	return nil
 }
 
-func createUser(c *gin.Context) {
+func createUser(c echo.Context) error {
 	var user models.User
-
-	if err := c.BindJSON(&user); err != nil {
-		c.JSON(400, gin.H{"Error": err.Error()})
-		return
+	json_map := make(map[string]interface{})
+	if err := json.NewDecoder(c.Request().Body).Decode(&json_map); err != nil {
+		return c.JSON(400, err.Error())
 	}
 
-	user.Password = utils.HashAndSalt([]byte(user.Password))
+	user.FirstName = json_map["FirstName"].(string)
+	user.LastName = json_map["LastName"].(string)
+	user.Email = json_map["Email"].(string)
+	user.Password = utils.HashAndSalt([]byte(json_map["Password"].(string)))
 	userId, err := services.CreateUser(user)
 
 	if err != nil {
-		c.JSON(400, gin.H{"message": err.Error()})
+		return c.JSON(400, err.Error())
 	} else {
-		c.JSON(200, userId)
+		return c.JSON(200, userId)
 	}
 }
 
-func updateUser(c *gin.Context) {
-	c.JSON(200, gin.H{"message": "update user"})
+func updateUser(c echo.Context) error {
+	return c.JSON(200, "update user")
 }
 
-func deleteUser(c *gin.Context) {
-	c.JSON(200, gin.H{"message": "delete user"})
+func deleteUser(c echo.Context) error {
+	return c.JSON(200, "delete user")
 }
 
-func loginUser(c *gin.Context) {
-	email := c.PostForm("email")
-	password := c.PostForm("password")
+func loginUser(c echo.Context) error {
+	email := c.FormValue("email")
+	password := c.FormValue("password")
 
 	err := services.Login(email, password)
 
 	if err != nil {
 		errorComponent := templates.Error(err.Error())
-		errorComponent.Render(c.Request.Context(), c.Writer)
+		errorComponent.Render(c.Request().Context(), c.Response().Writer)
+		return nil
 	} else {
-		c.String(200, "Success")
+		return c.String(200, "Success")
 	}
 }

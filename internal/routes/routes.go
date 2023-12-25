@@ -3,24 +3,30 @@ package routes
 import (
 	"bez/bez_server/templates"
 
-	"github.com/a-h/templ"
-	"github.com/gin-gonic/gin"
+	"github.com/labstack/echo/v4"
 )
 
-var router = gin.Default()
+var router = echo.New()
 
 func Init() {
-	router.GET("/v", func(c *gin.Context) {
-		c.String(200, "v0.0.2")
+	router.GET("/v", func(c echo.Context) error {
+		return c.String(200, "v0.0.2")
 	})
-	router.GET("/favicon.ico", func(c *gin.Context) {
-		c.String(200, "")
-	})
-	router.NoRoute(gin.WrapH(templ.Handler(templates.NotFound())))
 
-	component := templates.Login()
-	router.GET("/", gin.WrapH(templ.Handler(component)))
+	router.GET("/favicon.ico", func(c echo.Context) error {
+		return c.String(200, "")
+	})
+
+	router.GET("/", func(c echo.Context) error {
+		templates.Login().Render(c.Request().Context(), c.Response().Writer)
+		return nil
+	})
+
+	router.RouteNotFound("/*", func(c echo.Context) error {
+		templates.NotFound().Render(c.Request().Context(), c.Response().Writer)
+		return nil
+	})
 
 	usersInit()
-	router.Run(":8080")
+	router.Logger.Fatal(router.Start(":8080"))
 }

@@ -21,38 +21,33 @@ type User struct {
 // }
 
 func CreateUser(user User) (int64, error) {
-	fmt.Println("Creating user...", user.FirstName, user.LastName, user.Email, user.Password)
-	tx, err := DB.Begin()
-	if err != nil {
-		return -1, err
-	}
+	println(user.FirstName, user.LastName, user.Password, user.Email)
 
-	q, err := tx.Prepare("INSERT INTO users (first_name, last_name, email, password) VALUES (?, ?, ?, ?)")
-
-	if err != nil {
-		return -1, err
-	}
-
+	q, err := DB.Prepare("INSERT INTO users (first_name, last_name, email, password) VALUES (?, ?, ?, ?)")
 	defer q.Close()
 
-	result, err1 := q.Exec(user.FirstName, user.LastName, user.Email, user.Password)
-
-	if err1 != nil {
-		return -1, err1
-	}
-	id, err2 := result.LastInsertId()
-
-	if err2 != nil {
-		return -1, err2
+	if err != nil {
+		return -1, err
 	}
 
-	tx.Commit()
+	result, err := q.Exec(user.FirstName, user.LastName, user.Email, user.Password)
+
+	if err != nil {
+		return -1, err
+	}
+
+	id, err := result.LastInsertId()
+
+	if err != nil {
+		return -1, err
+	}
 
 	return id, nil
 }
 
 func GetUserById(id int) (User, error) {
 	q, err := DB.Prepare("SELECT * FROM users WHERE id = ?")
+	defer q.Close()
 
 	if err != nil {
 		return User{}, err
@@ -70,6 +65,7 @@ func GetUserById(id int) (User, error) {
 
 func GetUserByEmail(email string) (User, error) {
 	q, err := DB.Prepare("SELECT * FROM users WHERE email = ?")
+	defer q.Close()
 
 	if err != nil {
 		return User{}, err
@@ -95,6 +91,7 @@ func GetUsers(sort string, dir string) ([]User, error) {
 	qString := fmt.Sprintf("SELECT * FROM users ORDER BY %s %s", sort, dir)
 
 	q, err := DB.Prepare(qString)
+	defer q.Close()
 
 	users := []User{}
 
@@ -103,6 +100,7 @@ func GetUsers(sort string, dir string) ([]User, error) {
 	}
 
 	rows, err := q.Query()
+	defer rows.Close()
 
 	for rows.Next() {
 		user := User{}
