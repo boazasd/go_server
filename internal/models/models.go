@@ -27,14 +27,14 @@ func CreateDatabase() error {
 		os.Exit(1)
 	}
 
-	_, err = db.Exec("CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY, first_name TEXT NOT NULL, last_name TEXT NOT NULL, email TEXT NOT NULL UNIQUE, password TEXT NOT NULL)")
+	_, err = db.Exec("CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY, firstName TEXT NOT NULL, lastName TEXT NOT NULL, email TEXT NOT NULL UNIQUE, password TEXT NOT NULL)")
 
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}
 
-	_, err = db.Exec("CREATE TABLE IF NOT EXISTS sessions (id INTEGER PRIMARY KEY, session_id TEXT NOT NULL UNIQUE, user_id INTEGER NOT NULL, expiration_time TEXT NOT NULL)")
+	_, err = db.Exec("CREATE TABLE IF NOT EXISTS sessions (id INTEGER PRIMARY KEY, sessionId TEXT NOT NULL UNIQUE, userId INTEGER NOT NULL, expirationTime TIMESTAMP NOT NULL)")
 
 	if err != nil {
 		fmt.Println(err)

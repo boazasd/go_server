@@ -6,24 +6,17 @@ import (
 )
 
 type User struct {
-	Id        int
+	Id        int64
 	FirstName string
 	LastName  string
 	Email     string
 	Password  string
 }
 
-// func createUserTable() {
-// 	res,err := DB.query("CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY, first_name TEXT, last_name TEXT, email TEXT, password TEXT, roles TEXT)")
-// 	if err != nil {
-// 		return err
-// 	}
-// }
-
 func CreateUser(user User) (int64, error) {
 	println(user.FirstName, user.LastName, user.Password, user.Email)
 
-	q, err := DB.Prepare("INSERT INTO users (first_name, last_name, email, password) VALUES (?, ?, ?, ?)")
+	q, err := DB.Prepare("INSERT INTO users (firstName, lastName, email, password) VALUES (?, ?, ?, ?)")
 	defer q.Close()
 
 	if err != nil {

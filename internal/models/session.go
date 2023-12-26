@@ -58,13 +58,33 @@ func UpdateSession(session Session) error {
 	q, err := DB.Prepare(`
 	UPDATE sessions 
 	SET expirationTime = $2
-	WHERE id = $1`)
+	WHERE id = $1
+	`)
 
 	if err != nil {
 		return err
 	}
 
 	_, err = q.Exec(session.Id, session.ExpirationTime)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func DeleteSession(sessionId string) error {
+	q, err := DB.Prepare(`
+	DELETE sessions 
+	WHERE id = $1
+	`)
+
+	if err != nil {
+		return err
+	}
+
+	_, err = q.Exec(sessionId)
 
 	if err != nil {
 		return err

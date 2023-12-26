@@ -3,6 +3,8 @@ package services
 import (
 	"bez/bez_server/internal/models"
 	"bez/bez_server/internal/utils"
+	"errors"
+	"net/http"
 	"time"
 
 	"github.com/google/uuid"
@@ -11,45 +13,53 @@ import (
 var expirationTime = time.Hour
 var refreshWindow = time.Minute * 20
 
-func CreateSession(userId int64) (string, error) {
-	uuid := uuid.New()
+func CreateSessionCookie(sessionId string) *http.Cookie {
+	cookie := new(http.Cookie)
+	cookie.Name = "session"
+	cookie.Value = sessionId
+	cookie.Expires = time.Now().Add(expirationTime)
+	return cookie
+}
+
+func CreateOrRefreshSession(userId int64) (*http.Cookie, error) {
+	uuid := uuid.New().String()
 	session := models.Session{
-		SessionId:      utils.Hash([]byte(uuid.String())),
+		SessionId:      utils.Hash([]byte(uuid)),
 		UserId:         userId,
 		ExpirationTime: time.Now().Add(expirationTime),
 	}
 
 	if err := models.CreateSession(session); err != nil {
-		return "", err
+		return nil, err
 	}
 
-	return uuid.String(), nil
+	cookie := CreateSessionCookie(uuid)
+
+	return cookie, nil
 }
 
-func CheckSession(sessionId string) bool {
+func CheckSession(sessionId string) (bool, error) {
 	hashed := utils.Hash([]byte(sessionId))
 	session, err := models.GetSession(hashed)
 
 	if err != nil {
-		return false
+		return false, err
 	}
 
 	if session.Id == "" {
-		return false
+		return false, err
 	}
 
 	if session.ExpirationTime.Before(time.Now()) {
-		return false
+		return false, errors.New("Session expired")
 	}
 
-	RefreshSession(session)
-
-	return true
+	return true, nil
 }
 
-func RefreshSession(session models.Session) error {
-	session.ExpirationTime = time.Now().Add(expirationTime)
-	if err := models.UpdateSession(session); err != nil {
+func DeleteSession(sessionId string) error {
+	err := models.DeleteSession(sessionId)
+	if err != nil {
 		return err
 	}
 

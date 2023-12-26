@@ -1,14 +1,21 @@
 package routes
 
 import (
+	"bez/bez_server/internal/middlewares"
 	"bez/bez_server/templates"
 
 	"github.com/labstack/echo/v4"
 )
 
 var router = echo.New()
+var authRouters = router.Group("")
+var noAuthRouters = router.Group("")
 
 func Init() {
+
+	authRouters.Use(middlewares.Auth)
+	noAuthRouters.Use(middlewares.NoAuth)
+
 	router.GET("/v", func(c echo.Context) error {
 		return c.String(200, "v0.0.2")
 	})
@@ -17,7 +24,12 @@ func Init() {
 		return c.String(200, "")
 	})
 
-	router.GET("/", func(c echo.Context) error {
+	authRouters.GET("/", func(c echo.Context) error {
+		templates.Home().Render(c.Request().Context(), c.Response().Writer)
+		return nil
+	})
+
+	noAuthRouters.GET("/login", func(c echo.Context) error {
 		templates.Login().Render(c.Request().Context(), c.Response().Writer)
 		return nil
 	})
@@ -28,5 +40,6 @@ func Init() {
 	})
 
 	usersInit()
+	sessionInit()
 	router.Logger.Fatal(router.Start(":8080"))
 }

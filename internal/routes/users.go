@@ -12,12 +12,11 @@ import (
 )
 
 func usersInit() {
-	router.GET("/users/getOne/:id", getUser)
-	router.GET("/users", getUsers)
-	router.POST("/users/login", loginUser)
-	router.POST("/users/create", createUser)
-	router.POST("/users/update", updateUser)
-	router.DELETE("/users/delete/:id", deleteUser)
+	authRouters.GET("/users/getOne/:id", getUser)
+	authRouters.GET("/users", getUsers)
+	authRouters.POST("/users/create", createUser)
+	authRouters.POST("/users/update", updateUser)
+	authRouters.DELETE("/users/delete/:id", deleteUser)
 }
 
 func getUser(c echo.Context) error {
@@ -71,19 +70,4 @@ func updateUser(c echo.Context) error {
 
 func deleteUser(c echo.Context) error {
 	return c.JSON(200, "delete user")
-}
-
-func loginUser(c echo.Context) error {
-	email := c.FormValue("email")
-	password := c.FormValue("password")
-
-	err := services.Login(email, password)
-
-	if err != nil {
-		errorComponent := templates.Error(err.Error())
-		errorComponent.Render(c.Request().Context(), c.Response().Writer)
-		return nil
-	} else {
-		return c.String(200, "Success")
-	}
 }

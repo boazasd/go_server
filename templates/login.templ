@@ -6,7 +6,7 @@ templ Login() {
 		<body>
 			<div style="margin:auto 40; text-align:center">
 				<h1>Login</h1>
-				<form hx-post="/users/login" hx-on::after-request="onLogin()" hx-target="#resDiv">
+				<form hx-post="/sessionLogin" hx-params="*" hx-target="#resDiv">
 					<div>
 						<input type="email" name="email" placeholder="Username"/>
 					</div>
@@ -20,10 +20,5 @@ templ Login() {
 				<div id="resDiv"></div>
 			</div>
 		</body>
-		<script>
-            function onLogin() {
-                if ( resDiv.innerHTML == 'Success' ) location.href = '/users'
-            }
-        </script>
 	</html>
 }

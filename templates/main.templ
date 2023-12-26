@@ -1,0 +1,17 @@
+package templates
+
+templ Main() {
+	<html>
+		@Head()
+		<body>
+        <button hx-post="/sessionLogout">Logout</button>
+			<div style="display: flex; width: 500px">
+                <a href="/" style="flex: 1">Home</a>
+                <a href="/users" style="flex: 1">Users</a>
+            </div>
+			<div >
+                { children... } 
+            </div>
+		</body>
+	</html>
+}

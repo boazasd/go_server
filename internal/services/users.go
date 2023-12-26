@@ -29,15 +29,15 @@ func GetUsers(sort string, dir string) ([]models.User, error) {
 	return users, err
 }
 
-func Login(email string, password string) error {
+func Login(email string, password string) (int64, error) {
 	user, err := models.GetUserByEmail(email)
 	if err != nil {
-		return err
+		return -1, err
 	}
 
 	if !utils.ComparePasswords(user.Password, []byte(password)) {
-		return errors.New("Invalid password")
+		return -1, errors.New("Invalid password")
 	}
 
-	return nil
+	return user.Id, nil
 }

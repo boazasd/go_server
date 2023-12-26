@@ -6,10 +6,9 @@ import (
 )
 
 templ Users(users []models.User) {
-	<html>
-		@Head()
-		<body>
-			<a href="/users?sort=id&dir=DESC">Sort</a>
+	@Main() {
+		<div id="usersPage">
+			<button hx-get="/users?sort=id&dir=DESC" hx-target="#usersPage">Sort </button>
 			<table>
 				<tr>
 					<th>Id</th>
@@ -20,7 +19,7 @@ templ Users(users []models.User) {
 				</tr>
 				for _, user := range users {
 					<tr>
-						<td>{ strconv.Itoa(user.Id) }</td>
+						<td>{ strconv.FormatInt(user.Id, 10) }</td>
 						<td>{ user.FirstName }</td>
 						<td>{ user.LastName }</td>
 						<td>{ user.Email }</td>
@@ -28,6 +27,6 @@ templ Users(users []models.User) {
 					</tr>
 				}
 			</table>
-		</body>
-	</html>
+		</div>
+	}
 }
