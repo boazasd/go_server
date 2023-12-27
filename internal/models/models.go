@@ -1,6 +1,7 @@
 package models
 
 import (
+	"bez/bez_server/internal/utils"
 	"database/sql"
 	"errors"
 	"fmt"
@@ -12,6 +13,7 @@ import (
 var DB *sql.DB
 
 func CreateDatabase() error {
+
 	os.MkdirAll("./data", 0755)
 	_, error := os.Stat("./data/data.db")
 	if errors.Is(error, os.ErrNotExist) {
@@ -51,6 +53,30 @@ func ConnectDatabse() error {
 	}
 
 	DB = db
+
+	users, err := GetUsers("", "", 10, 0)
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+	if len(users) == 0 {
+		pass, err := utils.RandomString(10, "")
+		println("first user pass", pass)
+
+		if err != nil {
+			fmt.Println(err)
+			os.Exit(1)
+		}
+
+		firstUser := User{
+			FirstName: "super",
+			LastName:  "admin",
+			Email:     "boazprog@gmail.com",
+			Password:  utils.HashAndSalt([]byte(pass)),
+		}
+		CreateUser(firstUser)
+	}
+
 	return nil
 }
 
