@@ -1,31 +1,18 @@
 package main
 
 import (
+	"bez/bez_server/internal/services"
 	"os"
 )
 
 func dev() {
 
-	// string1 := "🎁שלום יורם"
-	// string1bytes := make([]byte, len(string1))
-	// for i := 0; i < len(string1); i++ {
-	// 	string1bytes[i] = string1[i]
-	// }
-
-	// string2 := string(string1bytes)
-
-	// println(string1, string2)
-	// if string1 != string2 {
-	// 	println("passwords do not match")
-	// 	return
-	// }
-
-	// println("passwords match!")
+	services.ScrapeAgora()
 
 }
 
 func runDev() {
-	if false {
+	if true {
 		dev()
 		os.Exit(0)
 	}
