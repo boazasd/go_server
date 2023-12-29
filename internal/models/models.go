@@ -22,13 +22,13 @@ func CreateDatabase() error {
 	}
 
 	db, err := sql.Open("sqlite3", "./data/data.db")
-	defer db.Close()
 
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}
 
+	defer db.Close()
 	_, err = db.Exec("CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY, firstName TEXT NOT NULL, lastName TEXT NOT NULL, email TEXT NOT NULL UNIQUE, password TEXT NOT NULL)")
 
 	if err != nil {
@@ -61,18 +61,25 @@ func ConnectDatabse() error {
 	}
 	if len(users) == 0 {
 		pass, err := utils.RandomString(10, "")
-		println("first user pass", pass)
 
 		if err != nil {
 			fmt.Println(err)
 			os.Exit(1)
 		}
 
+		hashedPass, error := utils.HashAndSalt([]byte(pass))
+
+		if error != nil {
+			fmt.Println(err)
+			os.Exit(1)
+		}
+
+		println("super admin password is:", pass)
 		firstUser := User{
 			FirstName: "super",
 			LastName:  "admin",
 			Email:     "boazprog@gmail.com",
-			Password:  utils.HashAndSalt([]byte(pass)),
+			Password:  hashedPass,
 		}
 		CreateUser(firstUser)
 	}
@@ -84,7 +91,7 @@ func CloseDatabase() {
 	DB.Close()
 }
 
-type query struct {
-	sort      string
-	direction string
-}
+// type query struct {
+// 	sort      string
+// 	direction string
+// }

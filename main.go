@@ -6,6 +6,7 @@ import (
 )
 
 func main() {
+	runDev()
 	models.CreateDatabase()
 	models.ConnectDatabse()
 	defer models.CloseDatabase()

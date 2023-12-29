@@ -50,11 +50,15 @@ func createUser(c echo.Context) error {
 	if err := json.NewDecoder(c.Request().Body).Decode(&json_map); err != nil {
 		return c.JSON(400, err.Error())
 	}
+	pass, err := utils.HashAndSalt([]byte(json_map["Password"].(string)))
+	if err != nil {
+		return c.JSON(400, err.Error())
+	}
 
 	user.FirstName = json_map["FirstName"].(string)
 	user.LastName = json_map["LastName"].(string)
 	user.Email = json_map["Email"].(string)
-	user.Password = utils.HashAndSalt([]byte(json_map["Password"].(string)))
+	user.Password = pass
 	userId, err := services.CreateUser(user)
 
 	if err != nil {

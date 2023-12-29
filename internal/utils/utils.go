@@ -19,12 +19,13 @@ func SanitizeForDb(field string, allowEmpty bool) bool {
 	return valid.MatchString(field)
 }
 
-func HashAndSalt(str []byte) string {
+func HashAndSalt(str []byte) (string, error) {
 	hash, err := bcrypt.GenerateFromPassword(str, 8)
 	if err != nil {
 		log.Println(err)
+		return "", err
 	}
-	return string(hash)
+	return string(hash), nil
 }
 
 func RandomString(n int, letters string) (string, error) {
@@ -37,10 +38,10 @@ func RandomString(n int, letters string) (string, error) {
 		if err != nil {
 			return "", err
 		}
-		ret = append(ret, letters[num.Int64()])
+		ret[i] = letters[num.Int64()]
 	}
 
-	return string([]byte(ret)), nil
+	return string(ret), nil
 }
 
 func Hash(str []byte) string {

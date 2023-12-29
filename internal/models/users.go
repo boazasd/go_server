@@ -17,12 +17,12 @@ type User struct {
 func CreateUser(user User) (int64, error) {
 
 	q, err := DB.Prepare("INSERT INTO users (firstName, lastName, email, password) VALUES (?, ?, ?, ?)")
-	defer q.Close()
 
 	if err != nil {
 		return -1, err
 	}
 
+	defer q.Close()
 	result, err := q.Exec(user.FirstName, user.LastName, user.Email, user.Password)
 
 	if err != nil {
@@ -40,11 +40,12 @@ func CreateUser(user User) (int64, error) {
 
 func GetUserById(id int) (User, error) {
 	q, err := DB.Prepare("SELECT * FROM users WHERE id = ?")
-	defer q.Close()
 
 	if err != nil {
 		return User{}, err
 	}
+
+	defer q.Close()
 
 	user := User{}
 	err = q.QueryRow(id).Scan(&user.Id, &user.FirstName, &user.LastName, &user.Email, &user.Password)
@@ -58,11 +59,12 @@ func GetUserById(id int) (User, error) {
 
 func GetUserByEmail(email string) (User, error) {
 	q, err := DB.Prepare("SELECT * FROM users WHERE email = ?")
-	defer q.Close()
 
 	if err != nil {
 		return User{}, err
 	}
+
+	defer q.Close()
 
 	user := User{}
 	err = q.QueryRow(email).Scan(&user.Id, &user.FirstName, &user.LastName, &user.Email, &user.Password)
@@ -78,7 +80,7 @@ func GetUsers(sort string, dir string, limit uint, pageNumber uint) ([]User, err
 	users := []User{}
 
 	if !(utils.SanitizeForDb(sort, true) && utils.SanitizeForDb(dir, true)) {
-		return users, errors.New("Params are not valid")
+		return users, errors.New("params are not valid")
 	}
 
 	if dir == "" {
@@ -103,6 +105,11 @@ func GetUsers(sort string, dir string, limit uint, pageNumber uint) ([]User, err
 	defer q.Close()
 
 	rows, err := q.Query()
+
+	if err != nil {
+		return users, errors.New("Error")
+	}
+
 	defer rows.Close()
 
 	for rows.Next() {
