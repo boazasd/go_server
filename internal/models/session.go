@@ -1,17 +1,8 @@
 package models
 
-import (
-	"time"
-)
+import "bez/bez_server/internal/types"
 
-type Session struct {
-	Id             string
-	SessionId      string
-	UserId         int64
-	ExpirationTime time.Time
-}
-
-func CreateSession(session Session) error {
+func CreateSession(session types.Session) error {
 
 	tx, err := DB.Begin()
 	if err != nil {
@@ -37,24 +28,24 @@ func CreateSession(session Session) error {
 	return nil
 }
 
-func GetSession(sessionId string) (Session, error) {
+func GetSession(sessionId string) (types.Session, error) {
 	q, err := DB.Prepare("SELECT * FROM sessions WHERE sessionId = ?")
 
 	if err != nil {
-		return Session{}, err
+		return types.Session{}, err
 	}
 
-	session := Session{}
+	session := types.Session{}
 	err = q.QueryRow(sessionId).Scan(&session.Id, &session.SessionId, &session.UserId, &session.ExpirationTime)
 
 	if err != nil {
-		return Session{}, err
+		return types.Session{}, err
 	}
 
 	return session, nil
 }
 
-func UpdateSession(session Session) error {
+func UpdateSession(session types.Session) error {
 	q, err := DB.Prepare(`
 	UPDATE sessions 
 	SET expirationTime = $2

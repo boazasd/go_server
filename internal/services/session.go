@@ -2,6 +2,7 @@ package services
 
 import (
 	"bez/bez_server/internal/models"
+	"bez/bez_server/internal/types"
 	"bez/bez_server/internal/utils"
 	"errors"
 	"net/http"
@@ -11,7 +12,8 @@ import (
 )
 
 var expirationTime = time.Hour
-var refreshWindow = time.Minute * 20
+
+// var refreshWindow = time.Minute * 20
 
 func CreateSessionCookie(sessionId string) *http.Cookie {
 	cookie := new(http.Cookie)
@@ -23,7 +25,7 @@ func CreateSessionCookie(sessionId string) *http.Cookie {
 
 func CreateOrRefreshSession(userId int64) (*http.Cookie, error) {
 	uuid := uuid.New().String()
-	session := models.Session{
+	session := types.Session{
 		SessionId:      utils.Hash([]byte(uuid)),
 		UserId:         userId,
 		ExpirationTime: time.Now().Add(expirationTime),
@@ -51,7 +53,7 @@ func CheckSession(sessionId string) (bool, error) {
 	}
 
 	if session.ExpirationTime.Before(time.Now()) {
-		return false, errors.New("Session expired")
+		return false, errors.New("session expired")
 	}
 
 	return true, nil

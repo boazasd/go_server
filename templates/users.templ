@@ -2,10 +2,10 @@ package templates
 
 import (
 	"strconv"
-	"bez/bez_server/internal/models"
+	"bez/bez_server/internal/types"
 )
 
-templ Users(users []models.User) {
+templ Users(users []types.User) {
 	@Main() {
 		<div id="usersPage">
 			<button hx-get="/users?sort=id&dir=DESC" hx-target="#usersPage">Sort </button>

@@ -1,8 +1,8 @@
 package routes
 
 import (
-	"bez/bez_server/internal/models"
 	"bez/bez_server/internal/services"
+	"bez/bez_server/internal/types"
 	"bez/bez_server/internal/utils"
 	"bez/bez_server/templates"
 	"encoding/json"
@@ -21,6 +21,10 @@ func usersInit() {
 
 func getUser(c echo.Context) error {
 	id, err := strconv.Atoi(c.Param("id"))
+
+	if err != nil {
+		return c.JSON(400, err.Error())
+	}
 
 	user, err := services.GetUser(id)
 	if err != nil {
@@ -45,7 +49,7 @@ func getUsers(c echo.Context) error {
 }
 
 func createUser(c echo.Context) error {
-	var user models.User
+	var user types.User
 	json_map := make(map[string]interface{})
 	if err := json.NewDecoder(c.Request().Body).Decode(&json_map); err != nil {
 		return c.JSON(400, err.Error())

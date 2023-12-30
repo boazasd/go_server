@@ -2,20 +2,21 @@ package services
 
 import (
 	"bez/bez_server/internal/models"
+	"bez/bez_server/internal/types"
 	"bez/bez_server/internal/utils"
 	"errors"
 )
 
-func GetUser(id int) (models.User, error) {
+func GetUser(id int) (types.User, error) {
 	if id == 0 {
-		return models.User{}, errors.New("Invalid id")
+		return types.User{}, errors.New("invalid id")
 	}
 
 	user, err := models.GetUserById(id)
 	return user, err
 }
 
-func CreateUser(user models.User) (int64, error) {
+func CreateUser(user types.User) (int64, error) {
 	userId, error := models.CreateUser(user)
 	if error != nil {
 		return -1, error
@@ -24,7 +25,7 @@ func CreateUser(user models.User) (int64, error) {
 	}
 }
 
-func GetUsers(sort string, dir string) ([]models.User, error) {
+func GetUsers(sort string, dir string) ([]types.User, error) {
 	users, err := models.GetUsers(sort, dir, 10, 0)
 	return users, err
 }
@@ -36,7 +37,7 @@ func Login(email string, password string) (int64, error) {
 	}
 
 	if !utils.ComparePasswords(user.Password, []byte(password)) {
-		return -1, errors.New("Invalid password")
+		return -1, errors.New("invalid password")
 	}
 
 	return user.Id, nil

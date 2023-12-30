@@ -1,20 +1,13 @@
 package models
 
 import (
+	"bez/bez_server/internal/types"
 	"bez/bez_server/internal/utils"
 	"errors"
 	"fmt"
 )
 
-type User struct {
-	Id        int64
-	FirstName string
-	LastName  string
-	Email     string
-	Password  string
-}
-
-func CreateUser(user User) (int64, error) {
+func CreateUser(user types.User) (int64, error) {
 
 	q, err := DB.Prepare("INSERT INTO users (firstName, lastName, email, password) VALUES (?, ?, ?, ?)")
 
@@ -38,46 +31,46 @@ func CreateUser(user User) (int64, error) {
 	return id, nil
 }
 
-func GetUserById(id int) (User, error) {
+func GetUserById(id int) (types.User, error) {
 	q, err := DB.Prepare("SELECT * FROM users WHERE id = ?")
 
 	if err != nil {
-		return User{}, err
+		return types.User{}, err
 	}
 
 	defer q.Close()
 
-	user := User{}
+	user := types.User{}
 	err = q.QueryRow(id).Scan(&user.Id, &user.FirstName, &user.LastName, &user.Email, &user.Password)
 
 	if err != nil {
-		return User{}, err
+		return types.User{}, err
 	}
 
 	return user, nil
 }
 
-func GetUserByEmail(email string) (User, error) {
+func GetUserByEmail(email string) (types.User, error) {
 	q, err := DB.Prepare("SELECT * FROM users WHERE email = ?")
 
 	if err != nil {
-		return User{}, err
+		return types.User{}, err
 	}
 
 	defer q.Close()
 
-	user := User{}
+	user := types.User{}
 	err = q.QueryRow(email).Scan(&user.Id, &user.FirstName, &user.LastName, &user.Email, &user.Password)
 
 	if err != nil {
-		return User{}, err
+		return types.User{}, err
 	}
 
 	return user, nil
 }
 
-func GetUsers(sort string, dir string, limit uint, pageNumber uint) ([]User, error) {
-	users := []User{}
+func GetUsers(sort string, dir string, limit uint, pageNumber uint) ([]types.User, error) {
+	users := []types.User{}
 
 	if !(utils.SanitizeForDb(sort, true) && utils.SanitizeForDb(dir, true)) {
 		return users, errors.New("params are not valid")
@@ -113,10 +106,10 @@ func GetUsers(sort string, dir string, limit uint, pageNumber uint) ([]User, err
 	defer rows.Close()
 
 	for rows.Next() {
-		user := User{}
+		user := types.User{}
 		err = rows.Scan(&user.Id, &user.FirstName, &user.LastName, &user.Email, &user.Password)
 		if err != nil {
-			return []User{}, errors.New("Error")
+			return []types.User{}, errors.New("Error")
 		}
 		users = append(users, user)
 	}

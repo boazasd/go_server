@@ -6,9 +6,10 @@ import (
 )
 
 func main() {
-	runDev()
 	models.CreateDatabase()
 	models.ConnectDatabse()
+	runDev()
+
 	defer models.CloseDatabase()
 	routes.Init()
 }

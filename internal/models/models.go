@@ -1,6 +1,7 @@
 package models
 
 import (
+	"bez/bez_server/internal/types"
 	"bez/bez_server/internal/utils"
 	"database/sql"
 	"errors"
@@ -29,14 +30,49 @@ func CreateDatabase() error {
 	}
 
 	defer db.Close()
-	_, err = db.Exec("CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY, firstName TEXT NOT NULL, lastName TEXT NOT NULL, email TEXT NOT NULL UNIQUE, password TEXT NOT NULL)")
+	_, err = db.Exec(`
+	CREATE TABLE IF NOT EXISTS users (
+		id INTEGER PRIMARY KEY, 
+		firstName TEXT NOT NULL, 
+		lastName TEXT NOT NULL, 
+		email TEXT NOT NULL UNIQUE, 
+		password TEXT NOT NULL,
+		createdAt TIMESTAMP NOT NULL,
+		updatedAt TIMESTAMP NOT NULL
+	)`)
 
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}
 
-	_, err = db.Exec("CREATE TABLE IF NOT EXISTS sessions (id INTEGER PRIMARY KEY, sessionId TEXT NOT NULL UNIQUE, userId INTEGER NOT NULL, expirationTime TIMESTAMP NOT NULL)")
+	_, err = db.Exec(`
+	CREATE TABLE IF NOT EXISTS sessions (
+		id INTEGER PRIMARY KEY, 
+		sessionId TEXT NOT NULL UNIQUE, 
+		userId INTEGER NOT NULL, 
+		expirationTime TIMESTAMP NOT NULL,
+		createdAt TIMESTAMP NOT NULL,
+		updatedAt TIMESTAMP NOT NULL
+	)`)
+
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+
+	_, err = db.Exec(`
+	CREATE TABLE IF NOT EXISTS agoraData (
+		id INTEGER PRIMARY KEY, 
+		link      TEXT NOT NULL UNIQUE,
+		name      TEXT NOT NULL,
+		details   TEXT NOT NULL,
+		city      TEXT NOT NULL,
+		area      TEXT NOT NULL,
+		date      TIMESTAMP NOT NULL,
+		createdAt TIMESTAMP NOT NULL,
+		updatedAt TIMESTAMP NOT NULL
+	)`)
 
 	if err != nil {
 		fmt.Println(err)
@@ -75,7 +111,7 @@ func ConnectDatabse() error {
 		}
 
 		println("super admin password is:", pass)
-		firstUser := User{
+		firstUser := types.User{
 			FirstName: "super",
 			LastName:  "admin",
 			Email:     "boazprog@gmail.com",
