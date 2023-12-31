@@ -37,8 +37,9 @@ func CreateDatabase() error {
 		lastName TEXT NOT NULL, 
 		email TEXT NOT NULL UNIQUE, 
 		password TEXT NOT NULL,
-		createdAt TIMESTAMP NOT NULL,
-		updatedAt TIMESTAMP NOT NULL
+		roles TEXT [],
+		createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+		updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP
 	)`)
 
 	if err != nil {
@@ -52,8 +53,8 @@ func CreateDatabase() error {
 		sessionId TEXT NOT NULL UNIQUE, 
 		userId INTEGER NOT NULL, 
 		expirationTime TIMESTAMP NOT NULL,
-		createdAt TIMESTAMP NOT NULL,
-		updatedAt TIMESTAMP NOT NULL
+		createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+		updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP
 	)`)
 
 	if err != nil {
@@ -70,8 +71,8 @@ func CreateDatabase() error {
 		city      TEXT NOT NULL,
 		area      TEXT NOT NULL,
 		date      TIMESTAMP NOT NULL,
-		createdAt TIMESTAMP NOT NULL,
-		updatedAt TIMESTAMP NOT NULL
+		createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+		updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP
 	)`)
 
 	if err != nil {
@@ -116,8 +117,16 @@ func ConnectDatabse() error {
 			LastName:  "admin",
 			Email:     "boazprog@gmail.com",
 			Password:  hashedPass,
+			Roles:     []string{"super"},
 		}
-		CreateUser(firstUser)
+		u := UserModel{Entity: firstUser}
+
+		_, err = Create("users", []string{"firstName", "lastName", "email", "password", "roles"}, &u)
+		// _, err = CreateUser(firstUser)
+		// if err != nil {
+		// 	fmt.Println(err)
+		// 	os.Exit(1)
+		// }
 	}
 
 	return nil

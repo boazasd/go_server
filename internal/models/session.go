@@ -29,7 +29,7 @@ func CreateSession(session types.Session) error {
 }
 
 func GetSession(sessionId string) (types.Session, error) {
-	q, err := DB.Prepare("SELECT * FROM sessions WHERE sessionId = ?")
+	q, err := DB.Prepare("SELECT id, sessionId, userId, expirationTime FROM sessions WHERE sessionId = ?")
 
 	if err != nil {
 		return types.Session{}, err

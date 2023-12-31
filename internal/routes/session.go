@@ -36,7 +36,7 @@ func sessionLogin(c echo.Context) error {
 }
 
 func sessionLogout(c echo.Context) error {
-	deletionCookie := services.CreateSessionCookie("=-=-=-")
+	deletionCookie := services.CreateSessionCookie("")
 
 	currentCookie, err := c.Cookie("session")
 	if err != nil {

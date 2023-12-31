@@ -8,7 +8,7 @@ import (
 func main() {
 	models.CreateDatabase()
 	models.ConnectDatabse()
-	runDev()
+	// runDev()
 
 	defer models.CloseDatabase()
 	routes.Init()

@@ -3,32 +3,26 @@ package models
 import (
 	"bez/bez_server/internal/types"
 	"bez/bez_server/internal/utils"
+	"database/sql"
 	"errors"
 	"fmt"
+	"strings"
 )
 
-func CreateUser(user types.User) (int64, error) {
+type UserModel struct {
+	Entity types.User
+}
 
-	q, err := DB.Prepare("INSERT INTO users (firstName, lastName, email, password) VALUES (?, ?, ?, ?)")
+func (model *UserModel) Insert(q *sql.Stmt) (sql.Result, error) {
+	result, err := q.Exec(
+		model.Entity.FirstName,
+		model.Entity.LastName,
+		model.Entity.Email,
+		model.Entity.Password,
+		strings.Join(model.Entity.Roles, ";"),
+	)
 
-	if err != nil {
-		return -1, err
-	}
-
-	defer q.Close()
-	result, err := q.Exec(user.FirstName, user.LastName, user.Email, user.Password)
-
-	if err != nil {
-		return -1, err
-	}
-
-	id, err := result.LastInsertId()
-
-	if err != nil {
-		return -1, err
-	}
-
-	return id, nil
+	return result, err
 }
 
 func GetUserById(id int) (types.User, error) {
@@ -41,7 +35,20 @@ func GetUserById(id int) (types.User, error) {
 	defer q.Close()
 
 	user := types.User{}
-	err = q.QueryRow(id).Scan(&user.Id, &user.FirstName, &user.LastName, &user.Email, &user.Password)
+	roles := ""
+	createdAt := 0
+	updatedAt := 0
+	err = q.QueryRow(id).Scan(
+		&user.Id,
+		&user.FirstName,
+		&user.LastName,
+		&user.Email,
+		&user.Password,
+		&roles,
+		&createdAt,
+		&updatedAt,
+	)
+	user.Roles = strings.Split(roles, ";")
 
 	if err != nil {
 		return types.User{}, err
@@ -58,9 +65,21 @@ func GetUserByEmail(email string) (types.User, error) {
 	}
 
 	defer q.Close()
-
+	roles := ""
+	createdAt := 0
+	updatedAt := 0
 	user := types.User{}
-	err = q.QueryRow(email).Scan(&user.Id, &user.FirstName, &user.LastName, &user.Email, &user.Password)
+
+	err = q.QueryRow(email).Scan(
+		&user.Id,
+		&user.FirstName,
+		&user.LastName,
+		&user.Email,
+		&user.Password,
+		&roles,
+		&createdAt,
+		&updatedAt,
+	)
 
 	if err != nil {
 		return types.User{}, err
@@ -93,23 +112,38 @@ func GetUsers(sort string, dir string, limit uint, pageNumber uint) ([]types.Use
 	q, err := DB.Prepare(qString)
 
 	if err != nil {
-		return users, errors.New("Error")
+		return users, err
 	}
 	defer q.Close()
 
 	rows, err := q.Query()
 
 	if err != nil {
-		return users, errors.New("Error")
+		return users, err
 	}
 
 	defer rows.Close()
 
 	for rows.Next() {
 		user := types.User{}
-		err = rows.Scan(&user.Id, &user.FirstName, &user.LastName, &user.Email, &user.Password)
+		roles := ""
+		createdAt := 0
+		updatedAt := 0
+
+		err = rows.Scan(
+			&user.Id,
+			&user.FirstName,
+			&user.LastName,
+			&user.Email,
+			&user.Password,
+			&roles,
+			&createdAt,
+			&updatedAt,
+		)
+
+		user.Roles = strings.Split(roles, ";")
 		if err != nil {
-			return []types.User{}, errors.New("Error")
+			return []types.User{}, err
 		}
 		users = append(users, user)
 	}

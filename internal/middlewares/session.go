@@ -16,10 +16,15 @@ func Auth(next echo.HandlerFunc) echo.HandlerFunc {
 		// }
 
 		if err != nil {
+			println(err.Error())
 			return c.Redirect(302, redirectPath)
 		}
 
 		logged, err := services.CheckSession(cookie.Value)
+
+		if err != nil {
+			println(err.Error())
+		}
 
 		if !logged {
 			return c.Redirect(302, redirectPath)
@@ -39,6 +44,10 @@ func NoAuth(next echo.HandlerFunc) echo.HandlerFunc {
 		}
 
 		logged, err := services.CheckSession(cookie.Value)
+
+		if err != nil {
+			println(err.Error())
+		}
 
 		if !logged {
 			return next(c)

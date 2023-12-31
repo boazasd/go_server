@@ -11,8 +11,6 @@ import (
 const websiteUrl = "https://www.agora.co.il"
 
 func ScrapeAgora() {
-	// arr := make(map[string]types.AgoraData)
-
 	c1 := colly.NewCollector()
 
 	c1.OnHTML("tbody.objectGroup", func(e *colly.HTMLElement) {
@@ -61,15 +59,6 @@ func ScrapeAgora() {
 			println(id)
 		})
 		c2.Visit(websiteUrl + link + "?toGet=1")
-
-		// println(id)
-
-		// println(name)
-		// println(state)
-		// println(city)
-		// println(details)
-		// println(date)
-		// println(area)
 	})
 
 	c1.Visit(websiteUrl + "/toGet.asp?dealType=1")
