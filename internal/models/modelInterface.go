@@ -18,15 +18,16 @@ func BuildFields(fields []string) (string, string) {
 }
 
 type DbQuery interface {
-	Prepare(query string) (DbQuery, error)
-	Scan(dest ...interface{}) error
+	// Prepare(query string) (*sql.Stmt, error)
+	Scan(row *sql.Row) error
+	QueryRow() *sql.Row
 }
 
-type InsertQuery interface {
-	Insert(q *sql.Stmt) (sql.Result, error)
+type DbInsert interface {
+	Exec(q *sql.Stmt) (sql.Result, error)
 }
 
-func Create(table string, fieldNames []string, query InsertQuery) (int64, error) {
+func BaseCreate(table string, fieldNames []string, query DbInsert) (int64, error) {
 
 	fields, vPlacholders := BuildFields(fieldNames)
 
@@ -37,7 +38,7 @@ func Create(table string, fieldNames []string, query InsertQuery) (int64, error)
 	}
 
 	defer q.Close()
-	result, err := query.Insert(q)
+	result, err := query.Exec(q)
 
 	if err != nil {
 		return -1, err
@@ -51,3 +52,21 @@ func Create(table string, fieldNames []string, query InsertQuery) (int64, error)
 
 	return id, nil
 }
+
+// func BaseGet(table string, queryString string, dq DbQuery) error {
+// 	q, err := DB.Prepare(queryString)
+
+// 	if err != nil {
+// 		return err
+// 	}
+
+// 	defer q.Close()
+
+// 	err = dq.Scan(q.QueryRow())
+
+// 	if err != nil {
+// 		return err
+// 	}
+
+// 	return nil
+// }

@@ -9,86 +9,84 @@ import (
 	"strings"
 )
 
-type UserModel struct {
-	Entity types.User
+type UserDbInterface struct {
+	types.User
 }
 
-func (model *UserModel) Insert(q *sql.Stmt) (sql.Result, error) {
+func (UserDbInterface) defaultFields() []string {
+	return []string{"firstName", "lastName", "email", "password", "roles"}
+}
+
+func (userInsert UserDbInterface) Exec(q *sql.Stmt) (sql.Result, error) {
 	result, err := q.Exec(
-		model.Entity.FirstName,
-		model.Entity.LastName,
-		model.Entity.Email,
-		model.Entity.Password,
-		strings.Join(model.Entity.Roles, ";"),
+		userInsert.FirstName,
+		userInsert.LastName,
+		userInsert.Email,
+		userInsert.Password,
+		strings.Join(userInsert.Roles, ";"),
 	)
 
 	return result, err
 }
 
-func GetUserById(id int) (types.User, error) {
-	q, err := DB.Prepare("SELECT * FROM users WHERE id = ?")
+func (userQuery UserDbInterface) Scan(row *sql.Row) error {
 
-	if err != nil {
-		return types.User{}, err
-	}
-
-	defer q.Close()
-
-	user := types.User{}
 	roles := ""
-	createdAt := 0
-	updatedAt := 0
-	err = q.QueryRow(id).Scan(
-		&user.Id,
-		&user.FirstName,
-		&user.LastName,
-		&user.Email,
-		&user.Password,
+	err := row.Scan(
+		&userQuery.Id,
+		&userQuery.FirstName,
+		&userQuery.LastName,
+		&userQuery.Email,
+		&userQuery.Password,
 		&roles,
-		&createdAt,
-		&updatedAt,
+		&userQuery.CreatedAt,
+		&userQuery.UpdatedAt,
 	)
-	user.Roles = strings.Split(roles, ";")
-
-	if err != nil {
-		return types.User{}, err
-	}
-
-	return user, nil
+	userQuery.Roles = strings.Split(roles, ";")
+	return err
 }
 
-func GetUserByEmail(email string) (types.User, error) {
-	q, err := DB.Prepare("SELECT * FROM users WHERE email = ?")
-
-	if err != nil {
-		return types.User{}, err
+func (UserDbInterface) Create(user types.User) (int64, error) {
+	udi := UserDbInterface{user}
+	userId, error := BaseCreate("users", udi.defaultFields(), &udi)
+	if error != nil {
+		return -1, error
+	} else {
+		return userId, nil
 	}
-
-	defer q.Close()
-	roles := ""
-	createdAt := 0
-	updatedAt := 0
-	user := types.User{}
-
-	err = q.QueryRow(email).Scan(
-		&user.Id,
-		&user.FirstName,
-		&user.LastName,
-		&user.Email,
-		&user.Password,
-		&roles,
-		&createdAt,
-		&updatedAt,
-	)
-
-	if err != nil {
-		return types.User{}, err
-	}
-
-	return user, nil
 }
 
-func GetUsers(sort string, dir string, limit uint, pageNumber uint) ([]types.User, error) {
+func (UserDbInterface) GetById(id int) (types.User, error) {
+	udi := UserDbInterface{}
+	fieldNames, _ := BuildFields(udi.defaultFields())
+	q, err := DB.Prepare("SELECT " + fieldNames + " FROM users WHERE id = ?")
+
+	if err != nil {
+		return types.User{}, err
+	}
+	defer q.Close()
+	udi.Scan(q.QueryRow(id))
+
+	return udi.User, err
+}
+
+func (UserDbInterface) GetByEmail(email string) (types.User, error) {
+	udi := UserDbInterface{}
+	fieldNames, _ := BuildFields(udi.defaultFields())
+	q, err := DB.Prepare("SELECT " + fieldNames + " FROM users WHERE email = ?")
+
+	if err != nil {
+		return types.User{}, err
+	}
+	defer q.Close()
+
+	udi.Scan(q.QueryRow(email))
+
+	return udi.User, err
+}
+
+func (UserDbInterface) GetMany(sort string, dir string, limit uint, pageNumber uint) ([]types.User, error) {
+	udi := UserDbInterface{}
 	users := []types.User{}
 
 	if !(utils.SanitizeForDb(sort, true) && utils.SanitizeForDb(dir, true)) {
@@ -102,7 +100,8 @@ func GetUsers(sort string, dir string, limit uint, pageNumber uint) ([]types.Use
 		limit = 10
 	}
 
-	qString := "SELECT * FROM users"
+	fieldNames, _ := BuildFields(udi.defaultFields())
+	qString := "SELECT " + fieldNames + " FROM users"
 
 	if sort != "" {
 		qString += fmt.Sprintf(" ORDER BY %s %s", sort, dir)
@@ -127,8 +126,6 @@ func GetUsers(sort string, dir string, limit uint, pageNumber uint) ([]types.Use
 	for rows.Next() {
 		user := types.User{}
 		roles := ""
-		createdAt := 0
-		updatedAt := 0
 
 		err = rows.Scan(
 			&user.Id,
@@ -137,8 +134,8 @@ func GetUsers(sort string, dir string, limit uint, pageNumber uint) ([]types.Use
 			&user.Email,
 			&user.Password,
 			&roles,
-			&createdAt,
-			&updatedAt,
+			&user.CreatedAt,
+			&user.UpdatedAt,
 		)
 
 		user.Roles = strings.Split(roles, ";")

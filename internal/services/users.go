@@ -17,8 +17,7 @@ func GetUser(id int) (types.User, error) {
 }
 
 func CreateUser(user types.User) (int64, error) {
-	userModel := models.UserModel{Entity: user}
-	userId, error := models.Create("users", []string{"firstName", "lastName", "email", "password", "roles"}, &userModel)
+	userId, error := models.CreateUser(user)
 	if error != nil {
 		return -1, error
 	} else {
@@ -27,7 +26,7 @@ func CreateUser(user types.User) (int64, error) {
 }
 
 func GetUsers(sort string, dir string) ([]types.User, error) {
-	users, err := models.GetUsers(sort, dir, 10, 0)
+	users, err := models.GetMany(sort, dir, 10, 0)
 	return users, err
 }
 

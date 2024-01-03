@@ -91,13 +91,14 @@ func ConnectDatabse() error {
 
 	DB = db
 
-	users, err := GetUsers("", "", 10, 0)
+	users, err := GetMany("", "", 10, 0)
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}
 	if len(users) == 0 {
-		pass, err := utils.RandomString(10, "")
+		// pass, err := utils.RandomString(10, "")
+		pass := "12345678"
 
 		if err != nil {
 			fmt.Println(err)
@@ -119,14 +120,13 @@ func ConnectDatabse() error {
 			Password:  hashedPass,
 			Roles:     []string{"super"},
 		}
-		u := UserModel{Entity: firstUser}
+		um := UserDbInterface{}
+		_, err = um.Create(firstUser)
 
-		_, err = Create("users", []string{"firstName", "lastName", "email", "password", "roles"}, &u)
-		// _, err = CreateUser(firstUser)
-		// if err != nil {
-		// 	fmt.Println(err)
-		// 	os.Exit(1)
-		// }
+		if err != nil {
+			fmt.Println(err)
+			os.Exit(1)
+		}
 	}
 
 	return nil
