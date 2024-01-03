@@ -10,6 +10,7 @@ require (
 	github.com/a-h/templ v0.2.501
 	github.com/gocolly/colly v1.2.0
 	github.com/google/uuid v1.5.0
+	github.com/jmoiron/sqlx v1.3.5
 	github.com/labstack/echo/v4 v4.11.4
 	github.com/mattn/go-sqlite3 v1.14.19
 	golang.org/x/crypto v0.17.0

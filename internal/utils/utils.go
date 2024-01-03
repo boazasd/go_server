@@ -15,14 +15,13 @@ func SanitizeForDb(field string, allowEmpty bool) bool {
 		return true
 	}
 
-	valid := regexp.MustCompile("^[A-Za-z0-9_]$")
+	valid := regexp.MustCompile("^[A-Za-z0-9_]+$")
 	return valid.MatchString(field)
 }
 
 func HashAndSalt(str []byte) (string, error) {
 	hash, err := bcrypt.GenerateFromPassword(str, 8)
 	if err != nil {
-		log.Println(err)
 		return "", err
 	}
 	return string(hash), nil

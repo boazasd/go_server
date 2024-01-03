@@ -10,6 +10,7 @@ func main() {
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
 	models.CreateDatabase()
 	models.ConnectDatabse()
+	models.CreateFirstUser()
 	// runDev()
 
 	defer models.CloseDatabase()

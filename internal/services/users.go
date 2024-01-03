@@ -11,13 +11,14 @@ func GetUser(id int) (types.User, error) {
 	if id == 0 {
 		return types.User{}, errors.New("invalid id")
 	}
-
-	user, err := models.GetUserById(id)
+	um := models.IUserModel{}
+	user, err := um.GetById(id)
 	return user, err
 }
 
 func CreateUser(user types.User) (int64, error) {
-	userId, error := models.CreateUser(user)
+	um := models.IUserModel{}
+	userId, error := um.Create(user)
 	if error != nil {
 		return -1, error
 	} else {
@@ -26,12 +27,14 @@ func CreateUser(user types.User) (int64, error) {
 }
 
 func GetUsers(sort string, dir string) ([]types.User, error) {
-	users, err := models.GetMany(sort, dir, 10, 0)
+	um := models.IUserModel{}
+	users, err := um.GetMany(sort, dir, 10, 0)
 	return users, err
 }
 
 func Login(email string, password string) (int64, error) {
-	user, err := models.GetUserByEmail(email)
+	um := models.IUserModel{}
+	user, err := um.GetByEmail(email)
 	if err != nil {
 		return -1, err
 	}

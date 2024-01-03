@@ -6,12 +6,14 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"log"
 	"os"
 
+	"github.com/jmoiron/sqlx"
 	_ "github.com/mattn/go-sqlite3"
 )
 
-var DB *sql.DB
+var DB *sqlx.DB
 
 func CreateDatabase() error {
 
@@ -37,7 +39,7 @@ func CreateDatabase() error {
 		lastName TEXT NOT NULL, 
 		email TEXT NOT NULL UNIQUE, 
 		password TEXT NOT NULL,
-		roles TEXT [],
+		roles TEXT NOT NULL,
 		createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
 		updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP
 	)`)
@@ -84,16 +86,21 @@ func CreateDatabase() error {
 }
 
 func ConnectDatabse() error {
-	db, err := sql.Open("sqlite3", "./data/data.db")
+	db, err := sqlx.Open("sqlite3", "./data/data.db")
 	if err != nil {
 		return err
 	}
 
 	DB = db
 
-	users, err := GetMany("", "", 10, 0)
+	return nil
+}
+
+func CreateFirstUser() {
+	um := IUserModel{}
+	users, err := um.GetMany("", "", 10, 0)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 		os.Exit(1)
 	}
 	if len(users) == 0 {
@@ -101,14 +108,14 @@ func ConnectDatabse() error {
 		pass := "12345678"
 
 		if err != nil {
-			fmt.Println(err)
+			log.Println(err)
 			os.Exit(1)
 		}
 
 		hashedPass, error := utils.HashAndSalt([]byte(pass))
 
 		if error != nil {
-			fmt.Println(err)
+			log.Println(err)
 			os.Exit(1)
 		}
 
@@ -118,25 +125,19 @@ func ConnectDatabse() error {
 			LastName:  "admin",
 			Email:     "boazprog@gmail.com",
 			Password:  hashedPass,
-			Roles:     []string{"super"},
+			Roles:     "super",
 		}
-		um := UserDbInterface{}
+		um := IUserModel{}
 		_, err = um.Create(firstUser)
 
 		if err != nil {
-			fmt.Println(err)
+			log.Println(err)
 			os.Exit(1)
 		}
 	}
 
-	return nil
 }
 
 func CloseDatabase() {
 	DB.Close()
 }
-
-// type query struct {
-// 	sort      string
-// 	direction string
-// }

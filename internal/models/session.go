@@ -46,40 +46,20 @@ func GetSession(sessionId string) (types.Session, error) {
 }
 
 func UpdateSession(session types.Session) error {
-	q, err := DB.Prepare(`
+	_, err := DB.Exec(`
 	UPDATE sessions 
 	SET expirationTime = $2
 	WHERE id = $1
 	`)
 
-	if err != nil {
-		return err
-	}
-
-	_, err = q.Exec(session.Id, session.ExpirationTime)
-
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return err
 }
 
 func DeleteSession(sessionId string) error {
-	q, err := DB.Prepare(`
+	_, err := DB.Exec(`
 	DELETE sessions 
-	WHERE id = $1
-	`)
+	WHERE id = ?
+	`, sessionId)
 
-	if err != nil {
-		return err
-	}
-
-	_, err = q.Exec(sessionId)
-
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return err
 }

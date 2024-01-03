@@ -4,13 +4,13 @@ import "time"
 
 type User struct {
 	Id        int64
-	FirstName string
-	LastName  string
+	FirstName string `db:"firstName"`
+	LastName  string `db:"lastName"`
 	Email     string
 	Password  string
-	Roles     []string
-	CreatedAt time.Time
-	UpdatedAt time.Time
+	Roles     string
+	CreatedAt time.Time `db:"createdAt"`
+	UpdatedAt time.Time `db:"updatedAt"`
 }
 
 type Session struct {

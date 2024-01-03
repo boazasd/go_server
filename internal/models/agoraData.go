@@ -6,7 +6,6 @@ import (
 )
 
 func CreateAgoraData(agoraData types.AgoraData) (int64, error) {
-	println("CreateAgoraData insert")
 	q, err := DB.Prepare("INSERT INTO agoraData (link, name, details, city, area, date, updatedAt, createdAt) VALUES (?, ?, ?, ?, ?, ?, ?, ?)")
 	if err != nil {
 		println(err.Error())
@@ -42,20 +41,8 @@ func CreateAgoraData(agoraData types.AgoraData) (int64, error) {
 }
 
 func GetAgoraDataByLink(link string) (types.AgoraData, error) {
-	q, err := DB.Prepare("SELECT link FROM agoraData WHERE link = ?")
-
-	if err != nil {
-		return types.AgoraData{}, err
-	}
-
-	defer q.Close()
-
 	agoraData := types.AgoraData{}
-	err = q.QueryRow(link).Scan(&agoraData.Link)
+	err := DB.Select(&agoraData, "SELECT link FROM agoraData WHERE link = ?", link)
 
-	if err != nil {
-		return types.AgoraData{}, err
-	}
-
-	return agoraData, nil
+	return agoraData, err
 }
