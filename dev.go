@@ -1,13 +1,13 @@
 package main
 
 import (
-	"bez/bez_server/internal/services"
+	"bez/bez_server/internal/dataSources"
 	"os"
 )
 
 func dev() {
 
-	services.ScrapeAgora()
+	dataSources.ScrapeAgora()
 
 }
 

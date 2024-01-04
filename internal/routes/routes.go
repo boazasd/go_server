@@ -20,8 +20,12 @@ func Init() {
 		return c.String(200, "v0.0.2")
 	})
 
-	router.GET("/favicon.ico", func(c echo.Context) error {
-		return c.String(200, "")
+	router.GET("/favicon", func(c echo.Context) error {
+		return c.File("assets/favicon_io/favicon.ico")
+	})
+
+	router.GET("/style.css", func(c echo.Context) error {
+		return c.File("assets/style.css")
 	})
 
 	authRouters.GET("/", func(c echo.Context) error {
@@ -41,5 +45,6 @@ func Init() {
 
 	usersInit()
 	sessionInit()
-	router.Logger.Fatal(router.Start(":8080"))
+	agoraInit()
+	router.Logger.Fatal(router.Start(":8081"))
 }

@@ -1,0 +1,43 @@
+package templates
+
+import (
+	"strconv"
+	"bez/bez_server/internal/types"
+)
+
+var baseLink = "https://www.agora.co.il"
+
+templ AgoraData(agoraData []types.AgoraData) {
+	@Main() {
+		<div id="agoraDataPage">
+			<table dir="rtl" class="table-auto w-full text-left w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+				<thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+					<tr>
+						<th class="px-6 py-3" >Id</th>
+						<th class="px-6 py-3" >Name</th>
+						<th class="px-6 py-3" >Link</th>
+						<th class="px-6 py-3" >Details</th>
+						<th class="px-6 py-3" >Area</th>
+						<th class="px-6 py-3" >Date Published</th>
+						<th class="px-6 py-3" >Created At</th>
+						<th class="px-6 py-3" >Updated At</th>
+					</tr>
+				</thead>
+				<tbody>
+					for _, ag := range agoraData {
+						<tr class="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700">
+							<td class="px-6 py-4" >{ strconv.FormatInt(ag.Id, 10) }</td>
+							<td class="px-6 py-4" >{ ag.Name }</td>
+							<td class="px-6 py-4" dir="ltr" class="px-5"><a target="_blank" href={ templ.URL(baseLink + ag.Link) } class="font-medium text-blue-600 dark:text-blue-500 hover:underline">{ baseLink+ag.Link }</a></td>
+							<td class="px-6 py-4" >{ ag.Details }</td>
+							<td class="px-6 py-4" >{ ag.Area }</td>
+							<td class="px-6 py-4" dir="ltr">{ ag.Date.Format("02/01/2006 15:04") }</td>
+							<td class="px-6 py-4" dir="ltr">{ ag.CreatedAt.Format("02/01/2006 15:04") }</td>
+							<td class="px-6 py-4" dir="ltr">{ ag.UpdatedAt.Format("02/01/2006 15:04") }</td>
+						</tr>
+					}
+				</tbody>
+			</table>
+		</div>
+	}
+}

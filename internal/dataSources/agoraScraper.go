@@ -1,4 +1,4 @@
-package services
+package dataSources
 
 import (
 	"bez/bez_server/internal/models"
@@ -14,9 +14,9 @@ func ScrapeAgora() {
 	c1 := colly.NewCollector()
 
 	c1.OnHTML("tbody.objectGroup", func(e *colly.HTMLElement) {
-
+		am := models.IAgoraModel{}
 		link := e.ChildAttr(".newWindow a[href]", "href")
-		isExist, err := models.GetAgoraDataByLink(link)
+		isExist, err := am.GetAgoraDataByLink(link)
 		if err != nil {
 			println(err.Error())
 		}
@@ -52,7 +52,7 @@ func ScrapeAgora() {
 				Area:    area,
 				City:    city,
 			}
-			id, err := models.CreateAgoraData(agoraData)
+			id, err := am.CreateAgoraData(agoraData)
 			if err != nil {
 				println(err.Error())
 			}

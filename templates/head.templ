@@ -3,7 +3,20 @@ package templates
 templ Head() {
 	<head>
 		<title>My Webpage</title>
-		<script src="https://unpkg.com/htmx.org@1.9.10"/>
-		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.classless.min.css"/>
+		<link rel="icon" type="image/png" href="/favicon"/>
+		<script src="https://unpkg.com/htmx.org@1.9.10"></script>
+		<script src="https://unpkg.com/htmx.org/dist/ext/response-targets.js"></script>
+		<script src="https://cdn.tailwindcss.com"></script>
+		<style>
+			input:-webkit-autofill,
+			input:-webkit-autofill:hover, 
+			input:-webkit-autofill:focus, 
+			input:-webkit-autofill:active{
+				-webkit-text-fill-color: white;
+				-webkit-background-clip: text;
+				-webkit-box-shadow: 0 0 0 30px rgba(0,0,0,0) inset !important;
+			}
+		</style>
+		// <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.classless.min.css"/>
 	</head>
 }

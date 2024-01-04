@@ -7,25 +7,33 @@ import (
 
 templ Users(users []types.User) {
 	@Main() {
+		<div class="py-4">
+			<a href="/users/create"  class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Add User</a>
+		</div>
 		<div id="usersPage">
-			<button hx-get="/users?sort=id&dir=DESC" hx-target="#usersPage">Sort </button>
-			<table>
-				<tr>
-					<th>Id</th>
-					<th>First Name</th>
-					<th>Last Name</th>
-					<th>Email</th>
-					<th>Created At</th>
-					<th>Updated At</th>
-				</tr>
-				for _, user := range users {
+			<table class="table-auto w-full text-left w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+				<thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
 					<tr>
-						<td>{ strconv.FormatInt(user.Id, 10) }</td>
-						<td>{ user.FirstName }</td>
-						<td>{ user.LastName }</td>
-						<td>{ user.Email }</td>
+						<th class="px-6 py-3">Id</th>
+						<th class="px-6 py-3">First Name</th>
+						<th class="px-6 py-3">Last Name</th>
+						<th class="px-6 py-3">Email</th>
+						<th class="px-6 py-3">Created At</th>
+						<th class="px-6 py-3">Updated At</th>
 					</tr>
-				}
+				</thead>
+				<tbody>
+					for _, user := range users {
+						<tr class="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700">
+							<td class="px-6 py-4">{ strconv.FormatInt(user.Id, 10) }</td>
+							<td class="px-6 py-4">{ user.FirstName }</td>
+							<td class="px-6 py-4">{ user.LastName }</td>
+							<td class="px-6 py-4">{ user.Email }</td>
+							<td class="px-6 py-4">{ user.CreatedAt.Format("2006-01-02") }</td>
+							<td class="px-6 py-4">{ user.UpdatedAt.Format("2006-01-02") }</td>
+						</tr>
+					}
+				</tbody>
 			</table>
 		</div>
 	}

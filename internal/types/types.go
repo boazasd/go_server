@@ -23,6 +23,7 @@ type Session struct {
 }
 
 type AgoraData struct {
+	Id        int64
 	Link      string
 	Name      string
 	Details   string
@@ -30,6 +31,6 @@ type AgoraData struct {
 	Area      string
 	State     string
 	Date      time.Time
-	CreatedAt time.Time
-	UpdatedAt time.Time
+	CreatedAt time.Time `db:"createdAt"`
+	UpdatedAt time.Time `db:"updatedAt"`
 }
