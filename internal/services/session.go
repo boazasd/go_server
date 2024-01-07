@@ -40,23 +40,23 @@ func CreateOrRefreshSession(userId int64) (*http.Cookie, error) {
 	return cookie, nil
 }
 
-func CheckSession(sessionId string) (bool, error) {
+func CheckSession(sessionId string) (int64, error) {
 	hashed := utils.Hash([]byte(sessionId))
 	session, err := models.GetSession(hashed)
 
 	if err != nil {
-		return false, err
+		return -1, err
 	}
 
-	if session.Id == "" {
-		return false, err
+	if session.Id == 0 {
+		return -1, err
 	}
 
 	if session.ExpirationTime.Before(time.Now()) {
-		return false, errors.New("session expired")
+		return -1, errors.New("session expired")
 	}
 
-	return true, nil
+	return session.UserId, nil
 }
 
 func DeleteSession(sessionId string) error {

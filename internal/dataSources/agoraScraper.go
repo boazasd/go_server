@@ -3,6 +3,7 @@ package dataSources
 import (
 	"bez/bez_server/internal/models"
 	"bez/bez_server/internal/types"
+	"log"
 	"time"
 
 	"github.com/gocolly/colly"
@@ -18,13 +19,14 @@ func ScrapeAgora() {
 		link := e.ChildAttr(".newWindow a[href]", "href")
 		isExist, err := am.GetAgoraDataByLink(link)
 		if err != nil {
-			println(err.Error())
+			log.Println(err.Error())
 		}
 
 		if isExist.Link != "" {
+			log.Println("already exist")
 			return
 		}
-		println(link)
+		log.Println(link)
 		name := e.ChildText(".objectName a")
 		state := e.ChildAttr(".objectState", "title")
 		date := e.ChildAttr(".regDate", "title")
@@ -39,7 +41,7 @@ func ScrapeAgora() {
 			parsedDate, err := time.Parse("2/1/2006 15:04", date)
 
 			if err != nil {
-				println(err.Error())
+				log.Println(err.Error())
 				return
 			}
 
@@ -54,13 +56,13 @@ func ScrapeAgora() {
 			}
 			id, err := am.CreateAgoraData(agoraData)
 			if err != nil {
-				println(err.Error())
+				log.Println(err.Error())
 			}
-			println(id)
+			log.Println(id)
 		})
 		c2.Visit(websiteUrl + link + "?toGet=1")
 	})
 
 	c1.Visit(websiteUrl + "/toGet.asp?dealType=1")
-	println("done")
+	log.Println("done")
 }

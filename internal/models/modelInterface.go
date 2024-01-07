@@ -63,7 +63,7 @@ func BaseGetMany(queryString string, dq IDb, queryParams ...any) (*sql.Rows, err
 
 	rows, err := q.Query(queryParams...)
 
-	return rows, nil
+	return rows, err
 }
 
 func BuildFields(fields []string) (string, string) {

@@ -7,14 +7,14 @@ import (
 	"strings"
 )
 
-type IUserModel struct {
+type IUser struct {
 }
 
-func (*IUserModel) DefaultSelectFields() string {
+func (*IUser) DefaultSelectFields() string {
 	return "id, firstName, lastName, email, password, roles, createdAt, updatedAt"
 }
 
-func (*IUserModel) Create(user types.User) (int64, error) {
+func (*IUser) Create(user types.User) (int64, error) {
 	fields, vPlacholders := BuildFields([]string{"firstName", "lastName", "email", "password", "roles"})
 	res, err := DB.Exec("INSERT INTO users ("+fields+") VALUES ("+vPlacholders+")", user.FirstName, user.LastName, user.Email, user.Password, user.Roles)
 
@@ -31,7 +31,7 @@ func (*IUserModel) Create(user types.User) (int64, error) {
 	return id, nil
 }
 
-func (um *IUserModel) GetById(id int) (types.User, error) {
+func (um *IUser) GetById(id int64) (types.User, error) {
 	user := types.User{}
 	err := DB.Get(&user, "SELECT "+um.DefaultSelectFields()+" FROM users WHERE id = ?", id)
 
@@ -42,7 +42,7 @@ func (um *IUserModel) GetById(id int) (types.User, error) {
 	return user, nil
 }
 
-func (um *IUserModel) GetByEmail(email string) (types.User, error) {
+func (um *IUser) GetByEmail(email string) (types.User, error) {
 	user := types.User{}
 	err := DB.Get(&user, "SELECT id, "+um.DefaultSelectFields()+" FROM users WHERE email = ?", email)
 
@@ -53,7 +53,7 @@ func (um *IUserModel) GetByEmail(email string) (types.User, error) {
 	return user, nil
 }
 
-func (um *IUserModel) GetMany(sort string, dir string, limit uint, offset uint) ([]types.User, error) {
+func (um *IUser) GetMany(sort string, dir string, limit uint, offset uint) ([]types.User, error) {
 	users := []types.User{}
 	qb := utils.QueryBuilder{Table: "users"}
 	query, err := qb.Select(strings.Split(um.DefaultSelectFields(), ", ")).Sort(sort, dir).Paginate(limit, offset).Build()

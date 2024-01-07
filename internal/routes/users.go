@@ -12,16 +12,20 @@ import (
 )
 
 func usersInit() {
-	authRouters.GET("/users/getOne/:id", getUser)
-	authRouters.GET("/users", getUsers)
+	authRouters.GET("/users/getOne/:id", getUser, P("super"))
+	authRouters.GET("/users", getUsers, P("super"))
 	authRouters.GET("/users/create", createUser)
+	authRouters.GET("/users/wishes", getWishes)
+	authRouters.POST("/users/setWishes", setWishes)
 	authRouters.POST("/users/createSubmit", createUserSubmit)
 	authRouters.POST("/users/update", updateUser)
 	authRouters.DELETE("/users/delete/:id", deleteUser)
 }
 
 func getUser(c echo.Context) error {
-	id, err := strconv.Atoi(c.Param("id"))
+
+	idStr := c.Param("id")
+	id, err := strconv.ParseInt(idStr, 10, 64)
 
 	if err != nil {
 		return c.JSON(400, err.Error())
@@ -55,6 +59,33 @@ func createUser(c echo.Context) error {
 	return nil
 }
 
+func getWishes(c echo.Context) error {
+	id := c.Get("userId").(int64)
+
+	wish, err := services.GetWishes(id)
+
+	if err != nil {
+		Render(c, templates.Error(err.Error()))
+		return nil
+	}
+
+	return c.HTML(200, wish.Wishes)
+}
+
+func setWishes(c echo.Context) error {
+	id := c.Get("userId").(int64)
+
+	wishstr := c.FormValue("wish")
+	wish, err := services.SetOrUpdateWishes(id, wishstr)
+
+	if err != nil {
+		Render(c, templates.Error(err.Error()))
+		return nil
+	}
+	log.Println(wish.Wishes, wish.UserId)
+	return c.HTML(200, wish.Wishes)
+}
+
 func createUserSubmit(c echo.Context) error {
 	var user types.User
 	// json_map := make(map[string]interface{})
@@ -78,6 +109,10 @@ func createUserSubmit(c echo.Context) error {
 	}
 
 	hashed, err := utils.HashAndSalt([]byte(pass))
+
+	if err != nil {
+		return c.HTML(200, err.Error())
+	}
 
 	user.FirstName = c.FormValue("firstName")
 	user.LastName = c.FormValue("lastName")

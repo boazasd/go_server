@@ -2,18 +2,27 @@ package routes
 
 import (
 	"bez/bez_server/internal/middlewares"
+	"bez/bez_server/internal/services"
 	"bez/bez_server/templates"
 
+	"github.com/a-h/templ"
 	"github.com/labstack/echo/v4"
 )
 
+var P = middlewares.Perm
 var router = echo.New()
 var authRouters = router.Group("")
 var noAuthRouters = router.Group("")
 
+func Render(c echo.Context, component templ.Component) error {
+	component.Render(c.Request().Context(), c.Response().Writer)
+	return nil
+}
+
 func Init() {
 
 	authRouters.Use(middlewares.Auth)
+	authRouters.Use(middlewares.AddUserData)
 	noAuthRouters.Use(middlewares.NoAuth)
 
 	router.GET("/v", func(c echo.Context) error {
@@ -29,7 +38,21 @@ func Init() {
 	})
 
 	authRouters.GET("/", func(c echo.Context) error {
-		templates.Home().Render(c.Request().Context(), c.Response().Writer)
+		userId := c.Get("userId").(int64)
+		user, err := services.GetUser(userId)
+		if err != nil {
+			Render(c, templates.Error(err.Error()))
+			return nil
+		}
+
+		wishes, err := services.GetWishes(userId)
+
+		if err != nil {
+			Render(c, templates.Error(err.Error()))
+			return nil
+		}
+
+		Render(c, templates.Home(user, wishes.Wishes))
 		return nil
 	})
 

@@ -2,6 +2,7 @@ package middlewares
 
 import (
 	"bez/bez_server/internal/services"
+	"log"
 
 	"github.com/labstack/echo/v4"
 )
@@ -20,15 +21,16 @@ func Auth(next echo.HandlerFunc) echo.HandlerFunc {
 			return c.Redirect(302, redirectPath)
 		}
 
-		logged, err := services.CheckSession(cookie.Value)
+		userId, err := services.CheckSession(cookie.Value)
 
 		if err != nil {
 			println(err.Error())
 		}
 
-		if !logged {
+		if userId == -1 {
 			return c.Redirect(302, redirectPath)
 		}
+		c.Set("userId", userId)
 
 		return next(c)
 	}
@@ -43,16 +45,32 @@ func NoAuth(next echo.HandlerFunc) echo.HandlerFunc {
 			return next(c)
 		}
 
-		logged, err := services.CheckSession(cookie.Value)
+		userId, err := services.CheckSession(cookie.Value)
+
+		if err != nil {
+			log.Println(err.Error())
+		}
+
+		if userId != -1 {
+			return c.Redirect(302, redirectPath)
+		}
+
+		return next(c)
+	}
+}
+
+func AddUserData(next echo.HandlerFunc) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		userId := c.Get("userId").(int64)
+
+		user, err := services.GetUser(userId)
 
 		if err != nil {
 			println(err.Error())
 		}
 
-		if !logged {
-			return next(c)
-		}
+		c.Set("user", user)
 
-		return c.Redirect(302, redirectPath)
+		return next(c)
 	}
 }

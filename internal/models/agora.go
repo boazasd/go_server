@@ -52,7 +52,7 @@ func (*IAgoraModel) CreateAgoraData(agoraData types.AgoraData) (int64, error) {
 
 func (*IAgoraModel) GetAgoraDataByLink(link string) (types.AgoraData, error) {
 	agoraData := types.AgoraData{}
-	err := DB.Select(&agoraData, "SELECT link FROM agoraData WHERE link = ?", link)
+	err := DB.Get(&agoraData, "SELECT link FROM agoraData WHERE link = ?", link)
 
 	return agoraData, err
 }

@@ -82,6 +82,20 @@ func CreateDatabase() error {
 		os.Exit(1)
 	}
 
+	_, err = db.Exec(`
+	CREATE TABLE IF NOT EXISTS wishes (
+		id INTEGER PRIMARY KEY, 
+		userId INTEGER NOT NULL UNIQUE,
+		wishes TEXT NOT NULL,
+		createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+		updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP
+	)`)
+
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+
 	return nil
 }
 
@@ -97,7 +111,7 @@ func ConnectDatabse() error {
 }
 
 func CreateFirstUser() {
-	um := IUserModel{}
+	um := IUser{}
 	users, err := um.GetMany("", "", 10, 0)
 	if err != nil {
 		log.Println(err)
@@ -127,7 +141,7 @@ func CreateFirstUser() {
 			Password:  hashedPass,
 			Roles:     "super",
 		}
-		um := IUserModel{}
+		um := IUser{}
 		_, err = um.Create(firstUser)
 
 		if err != nil {

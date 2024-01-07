@@ -7,17 +7,17 @@ import (
 	"errors"
 )
 
-func GetUser(id int) (types.User, error) {
+func GetUser(id int64) (types.User, error) {
 	if id == 0 {
 		return types.User{}, errors.New("invalid id")
 	}
-	um := models.IUserModel{}
+	um := models.IUser{}
 	user, err := um.GetById(id)
 	return user, err
 }
 
 func CreateUser(user types.User) (int64, error) {
-	um := models.IUserModel{}
+	um := models.IUser{}
 	userId, error := um.Create(user)
 	if error != nil {
 		return -1, error
@@ -27,13 +27,13 @@ func CreateUser(user types.User) (int64, error) {
 }
 
 func GetUsers(sort string, dir string) ([]types.User, error) {
-	um := models.IUserModel{}
+	um := models.IUser{}
 	users, err := um.GetMany(sort, dir, 10, 0)
 	return users, err
 }
 
 func Login(email string, password string) (int64, error) {
-	um := models.IUserModel{}
+	um := models.IUser{}
 	user, err := um.GetByEmail(email)
 	if err != nil {
 		return -1, err
@@ -44,4 +44,26 @@ func Login(email string, password string) (int64, error) {
 	}
 
 	return user.Id, nil
+}
+
+func SetOrUpdateWishes(id int64, wish string) (types.Wishes, error) {
+	wishes := models.IWishes{}
+	wishRes, err := wishes.Upsert(types.Wishes{UserId: id, Wishes: wish})
+
+	if err != nil {
+		return types.Wishes{}, err
+	}
+
+	return wishRes, nil
+}
+
+func GetWishes(id int64) (types.Wishes, error) {
+	wishes := models.IWishes{}
+	wish, err := wishes.GetByUserId(id)
+
+	if err != nil {
+		return types.Wishes{}, err
+	}
+
+	return wish, nil
 }

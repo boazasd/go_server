@@ -13,8 +13,16 @@ type User struct {
 	UpdatedAt time.Time `db:"updatedAt"`
 }
 
+type Wishes struct {
+	Id        int64
+	UserId    int64 `db:"userId"`
+	Wishes    string
+	CreatedAt time.Time `db:"createdAt"`
+	UpdatedAt time.Time `db:"updatedAt"`
+}
+
 type Session struct {
-	Id             string
+	Id             int64
 	SessionId      string
 	UserId         int64
 	ExpirationTime time.Time
