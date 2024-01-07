@@ -13,12 +13,22 @@ type User struct {
 	UpdatedAt time.Time `db:"updatedAt"`
 }
 
-type Wishes struct {
-	Id        int64
-	UserId    int64 `db:"userId"`
-	Wishes    string
-	CreatedAt time.Time `db:"createdAt"`
-	UpdatedAt time.Time `db:"updatedAt"`
+type AgoraAgent struct {
+	Id            int64
+	UserId        int64     `db:"userId"`
+	SearchTxt     string    `db:"searchTxt"`
+	Category      string    `db:"category"`
+	SubCategory   string    `db:"subCategory"`
+	Area          string    `db:"area"`
+	Condition     string    `db:"condition"`
+	OnlyWithImage string    `db:"onlyWithImage"`
+	CreatedAt     time.Time `db:"createdAt"`
+	UpdatedAt     time.Time `db:"updatedAt"`
+}
+
+type UserWithAgant struct {
+	User
+	AgoraAgent
 }
 
 type Session struct {

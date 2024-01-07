@@ -83,10 +83,15 @@ func CreateDatabase() error {
 	}
 
 	_, err = db.Exec(`
-	CREATE TABLE IF NOT EXISTS wishes (
+	CREATE TABLE IF NOT EXISTS agoraAgents (
 		id INTEGER PRIMARY KEY, 
-		userId INTEGER NOT NULL UNIQUE,
-		wishes TEXT NOT NULL,
+		userId INTEGER NOT NULL,
+		searchTxt TEXT NOT NULL,
+		category TEXT NOT NULL,
+		subCategory TEXT NOT NULL,
+		area TEXT NOT NULL,
+		condition TEXT NOT NULL,
+		onlyWithImage BOOLEAN NOT NULL,
 		createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
 		updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP
 	)`)
@@ -149,7 +154,6 @@ func CreateFirstUser() {
 			os.Exit(1)
 		}
 	}
-
 }
 
 func CloseDatabase() {

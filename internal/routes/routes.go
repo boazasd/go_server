@@ -4,6 +4,7 @@ import (
 	"bez/bez_server/internal/middlewares"
 	"bez/bez_server/internal/services"
 	"bez/bez_server/templates"
+	"log"
 
 	"github.com/a-h/templ"
 	"github.com/labstack/echo/v4"
@@ -45,14 +46,20 @@ func Init() {
 			return nil
 		}
 
-		wishes, err := services.GetWishes(userId)
+		agents, err := services.GetAgoraAgents(userId)
 
 		if err != nil {
-			Render(c, templates.Error(err.Error()))
-			return nil
+			// Render(c, templates.Error(err.Error()))
+			// return nil
+			log.Println(err.Error())
 		}
 
-		Render(c, templates.Home(user, wishes.Wishes))
+		agentsStr := []string{}
+		for _, agent := range agents {
+			agentsStr = append(agentsStr, agent.SearchTxt)
+		}
+
+		Render(c, templates.Home(user, agentsStr))
 		return nil
 	})
 

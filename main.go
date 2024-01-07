@@ -11,7 +11,7 @@ func main() {
 	models.CreateDatabase()
 	models.ConnectDatabse()
 	models.CreateFirstUser()
-	// runDev()
+	runDev()
 
 	defer models.CloseDatabase()
 	routes.Init()

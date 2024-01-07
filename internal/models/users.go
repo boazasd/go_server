@@ -70,3 +70,25 @@ func (um *IUser) GetMany(sort string, dir string, limit uint, offset uint) ([]ty
 
 	return users, nil
 }
+
+func (um *IUser) GetForAgentMessage(agoraData []types.AgoraData) ([]types.UserWithAgant, error) {
+	stmnt := `SELECT users.id, users.email, users.firstName, users.lastName, agoraAgents.searchTxt
+	FROM users 
+	inner join agoraAgents
+	on users.id = agoraAgents.userId where`
+
+	for _, ag := range agoraData {
+		ok := utils.SanitizeForDb(ag.Name, true)
+		if ok {
+			stmnt += " agoraAgents.searchTxt LIKE '%" + ag.Name + "%' OR"
+		}
+	}
+	stmnt = stmnt[:len(stmnt)-2]
+
+	println(stmnt)
+
+	uwas := []types.UserWithAgant{}
+	err := DB.Select(&uwas, stmnt)
+
+	return uwas, err
+}

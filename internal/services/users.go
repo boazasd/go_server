@@ -46,24 +46,28 @@ func Login(email string, password string) (int64, error) {
 	return user.Id, nil
 }
 
-func SetOrUpdateWishes(id int64, wish string) (types.Wishes, error) {
-	wishes := models.IWishes{}
-	wishRes, err := wishes.Upsert(types.Wishes{UserId: id, Wishes: wish})
-
+func AddAgoraAgent(agent types.AgoraAgent) (types.AgoraAgent, error) {
+	am := models.IAgoraAgents{}
+	id, err := am.Create(agent)
 	if err != nil {
-		return types.Wishes{}, err
+		return types.AgoraAgent{}, err
 	}
 
-	return wishRes, nil
+	res, err := am.GetById(id)
+	if err != nil {
+		return types.AgoraAgent{}, err
+	}
+
+	return res, nil
 }
 
-func GetWishes(id int64) (types.Wishes, error) {
-	wishes := models.IWishes{}
-	wish, err := wishes.GetByUserId(id)
+func GetAgoraAgents(id int64) ([]types.AgoraAgent, error) {
+	wm := models.IAgoraAgents{}
+	agents, err := wm.GetByUserId(id)
 
 	if err != nil {
-		return types.Wishes{}, err
+		return []types.AgoraAgent{}, err
 	}
 
-	return wish, nil
+	return agents, nil
 }

@@ -15,8 +15,8 @@ func usersInit() {
 	authRouters.GET("/users/getOne/:id", getUser, P("super"))
 	authRouters.GET("/users", getUsers, P("super"))
 	authRouters.GET("/users/create", createUser)
-	authRouters.GET("/users/wishes", getWishes)
-	authRouters.POST("/users/setWishes", setWishes)
+	authRouters.GET("/users/getAgoraAgents", getAgoraAgents)
+	authRouters.POST("/users/addAgoraAgent", AddAgoraAgent)
 	authRouters.POST("/users/createSubmit", createUserSubmit)
 	authRouters.POST("/users/update", updateUser)
 	authRouters.DELETE("/users/delete/:id", deleteUser)
@@ -59,31 +59,51 @@ func createUser(c echo.Context) error {
 	return nil
 }
 
-func getWishes(c echo.Context) error {
+func getAgoraAgents(c echo.Context) error {
 	id := c.Get("userId").(int64)
 
-	wish, err := services.GetWishes(id)
+	agents, err := services.GetAgoraAgents(id)
 
 	if err != nil {
 		Render(c, templates.Error(err.Error()))
 		return nil
 	}
 
-	return c.HTML(200, wish.Wishes)
+	html := ""
+	for _, agent := range agents {
+		html += agent.SearchTxt + "<br/>"
+	}
+
+	return c.HTML(200, html)
 }
 
-func setWishes(c echo.Context) error {
+func AddAgoraAgent(c echo.Context) error {
 	id := c.Get("userId").(int64)
+	searchStr := c.FormValue("searchTxt")
 
-	wishstr := c.FormValue("wish")
-	wish, err := services.SetOrUpdateWishes(id, wishstr)
+	agent := types.AgoraAgent{}
+	agent.SearchTxt = searchStr
+	agent.UserId = id
+
+	_, err := services.AddAgoraAgent(agent)
 
 	if err != nil {
 		Render(c, templates.Error(err.Error()))
 		return nil
 	}
-	log.Println(wish.Wishes, wish.UserId)
-	return c.HTML(200, wish.Wishes)
+	agents, err := services.GetAgoraAgents(id)
+
+	if err != nil {
+		Render(c, templates.Error(err.Error()))
+		return nil
+	}
+
+	html := ""
+	for _, wish := range agents {
+		html += wish.SearchTxt + "<br/>"
+	}
+
+	return c.HTML(200, html)
 }
 
 func createUserSubmit(c echo.Context) error {
