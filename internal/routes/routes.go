@@ -54,12 +54,7 @@ func Init() {
 			log.Println(err.Error())
 		}
 
-		agentsStr := []string{}
-		for _, agent := range agents {
-			agentsStr = append(agentsStr, agent.SearchTxt)
-		}
-
-		Render(c, templates.Home(user, agentsStr))
+		Render(c, templates.Home(user, agents))
 		return nil
 	})
 
@@ -76,5 +71,5 @@ func Init() {
 	usersInit()
 	sessionInit()
 	agoraInit()
-	router.Logger.Fatal(router.Start(":8081"))
+	router.Logger.Fatal(router.Start(":8080"))
 }

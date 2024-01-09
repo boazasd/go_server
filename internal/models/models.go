@@ -71,7 +71,13 @@ func CreateDatabase() error {
 		name      TEXT NOT NULL,
 		details   TEXT NOT NULL,
 		city      TEXT NOT NULL,
-		area      TEXT NOT NULL,
+		category TEXT NOT NULL,
+		middleCategory TEXT NOT NULL,
+		subCategory TEXT NOT NULL,
+		area TEXT NOT NULL,
+		condition TEXT NOT NULL,
+		image TEXT NOT NULL,
+		processed   boolean,
 		date      TIMESTAMP NOT NULL,
 		createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
 		updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP
@@ -86,12 +92,13 @@ func CreateDatabase() error {
 	CREATE TABLE IF NOT EXISTS agoraAgents (
 		id INTEGER PRIMARY KEY, 
 		userId INTEGER NOT NULL,
+		userEmail STRING NOT NULL,
 		searchTxt TEXT NOT NULL,
 		category TEXT NOT NULL,
 		subCategory TEXT NOT NULL,
 		area TEXT NOT NULL,
 		condition TEXT NOT NULL,
-		onlyWithImage BOOLEAN NOT NULL,
+		withImage BOOLEAN NOT NULL,
 		createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
 		updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP
 	)`)

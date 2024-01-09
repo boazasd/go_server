@@ -1,6 +1,7 @@
 package routes
 
 import (
+	"bez/bez_server/internal/models"
 	"bez/bez_server/internal/services"
 	"bez/bez_server/internal/types"
 	"bez/bez_server/internal/utils"
@@ -16,7 +17,8 @@ func usersInit() {
 	authRouters.GET("/users", getUsers, P("super"))
 	authRouters.GET("/users/create", createUser)
 	authRouters.GET("/users/getAgoraAgents", getAgoraAgents)
-	authRouters.POST("/users/addAgoraAgent", AddAgoraAgent)
+	authRouters.GET("/users/createAgent", createAgent)
+	authRouters.POST("/users/createAgentSubmit", createAgentSubmit)
 	authRouters.POST("/users/createSubmit", createUserSubmit)
 	authRouters.POST("/users/update", updateUser)
 	authRouters.DELETE("/users/delete/:id", deleteUser)
@@ -54,8 +56,13 @@ func getUsers(c echo.Context) error {
 }
 
 func createUser(c echo.Context) error {
-	createUserComponent := templates.CreateUser()
-	createUserComponent.Render(c.Request().Context(), c.Response().Writer)
+	cmp := templates.CreateUser()
+	Render(c, cmp)
+	return nil
+}
+func createAgent(c echo.Context) error {
+	cmp := templates.CreateAgent()
+	Render(c, cmp)
 	return nil
 }
 
@@ -77,33 +84,37 @@ func getAgoraAgents(c echo.Context) error {
 	return c.HTML(200, html)
 }
 
-func AddAgoraAgent(c echo.Context) error {
+func createAgentSubmit(c echo.Context) error {
 	id := c.Get("userId").(int64)
-	searchStr := c.FormValue("searchTxt")
+
+	um := models.IUser{}
+	user, err := um.GetById(id)
+
+	if err != nil {
+		return Render(c, templates.Error(err.Error()))
+	}
 
 	agent := types.AgoraAgent{}
-	agent.SearchTxt = searchStr
+	agent.SearchTxt = c.FormValue("searchTxt")
+	agent.Category = c.FormValue("category")
+	agent.Condition = c.FormValue("condition")
+	agent.Area = c.FormValue("area")
+	agent.WithImage = c.FormValue("withImage") == "on"
 	agent.UserId = id
+	agent.UserEmail = user.Email
 
-	_, err := services.AddAgoraAgent(agent)
-
-	if err != nil {
-		Render(c, templates.Error(err.Error()))
-		return nil
-	}
-	agents, err := services.GetAgoraAgents(id)
+	_, err = services.AddAgoraAgent(agent)
 
 	if err != nil {
-		Render(c, templates.Error(err.Error()))
-		return nil
+		return Render(c, templates.Error(err.Error()))
 	}
 
-	html := ""
-	for _, wish := range agents {
-		html += wish.SearchTxt + "<br/>"
+	if err != nil {
+		return Render(c, templates.Error(err.Error()))
 	}
 
-	return c.HTML(200, html)
+	c.Response().Header().Set("HX-Redirect", "/")
+	return nil
 }
 
 func createUserSubmit(c echo.Context) error {

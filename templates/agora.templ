@@ -14,13 +14,16 @@ templ AgoraData(agoraData []types.AgoraData) {
 				<thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
 					<tr>
 						<th class="px-6 py-3" >Id</th>
-						<th class="px-6 py-3" >Name</th>
-						<th class="px-6 py-3" >Link</th>
-						<th class="px-6 py-3" >Details</th>
-						<th class="px-6 py-3" >Area</th>
-						<th class="px-6 py-3" >Date Published</th>
-						<th class="px-6 py-3" >Created At</th>
-						<th class="px-6 py-3" >Updated At</th>
+						<th class="px-6 py-3" >שם</th>
+						<th class="px-6 py-3" >לינק</th>
+						<th class="px-6 py-3" >פרטים</th>
+						<th class="px-6 py-3" >קטגוריה</th>
+						<th class="px-6 py-3" >תת קטגוריה</th>
+						<th class="px-6 py-3" >תתת קטגוריה</th>
+						<th class="px-6 py-3" >אזור</th>
+						<th class="px-6 py-3" >תאריך כניסה</th>
+						<th class="px-6 py-3" >נוצר</th>
+						<th class="px-6 py-3" >עודכן</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -30,6 +33,9 @@ templ AgoraData(agoraData []types.AgoraData) {
 							<td class="px-6 py-4" >{ ag.Name }</td>
 							<td class="px-6 py-4" dir="ltr" class="px-5"><a target="_blank" href={ templ.URL(baseLink + ag.Link) } class="font-medium text-blue-600 dark:text-blue-500 hover:underline">{ baseLink+ag.Link }</a></td>
 							<td class="px-6 py-4" >{ ag.Details }</td>
+							<td class="px-6 py-4" >{ ag.Category }</td>
+							<td class="px-6 py-4" >{ ag.MiddleCategory }</td>
+							<td class="px-6 py-4" >{ ag.SubCategory }</td>
 							<td class="px-6 py-4" >{ ag.Area }</td>
 							<td class="px-6 py-4" dir="ltr">{ ag.Date.Format("02/01/2006 15:04") }</td>
 							<td class="px-6 py-4" dir="ltr">{ ag.CreatedAt.Format("02/01/2006 15:04") }</td>

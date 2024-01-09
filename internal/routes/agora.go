@@ -3,7 +3,6 @@ package routes
 import (
 	"bez/bez_server/internal/services"
 	"bez/bez_server/templates"
-	"log"
 	"strconv"
 
 	"github.com/labstack/echo/v4"
@@ -21,7 +20,6 @@ func getAgoraData(c echo.Context) error {
 
 	pageSize, err := strconv.ParseUint(pageSizeStr, 10, 16)
 	if err != nil {
-		log.Println(err)
 		pageSize = 10
 	}
 

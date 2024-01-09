@@ -16,7 +16,13 @@ func (*IUser) DefaultSelectFields() string {
 
 func (*IUser) Create(user types.User) (int64, error) {
 	fields, vPlacholders := BuildFields([]string{"firstName", "lastName", "email", "password", "roles"})
-	res, err := DB.Exec("INSERT INTO users ("+fields+") VALUES ("+vPlacholders+")", user.FirstName, user.LastName, user.Email, user.Password, user.Roles)
+	res, err := DB.Exec(`INSERT INTO users (`+fields+`) VALUES (`+vPlacholders+`)`,
+		user.FirstName,
+		user.LastName,
+		user.Email,
+		user.Password,
+		user.Roles,
+	)
 
 	if err != nil {
 		return -1, err
@@ -69,26 +75,4 @@ func (um *IUser) GetMany(sort string, dir string, limit uint, offset uint) ([]ty
 	}
 
 	return users, nil
-}
-
-func (um *IUser) GetForAgentMessage(agoraData []types.AgoraData) ([]types.UserWithAgant, error) {
-	stmnt := `SELECT users.id, users.email, users.firstName, users.lastName, agoraAgents.searchTxt
-	FROM users 
-	inner join agoraAgents
-	on users.id = agoraAgents.userId where`
-
-	for _, ag := range agoraData {
-		ok := utils.SanitizeForDb(ag.Name, true)
-		if ok {
-			stmnt += " agoraAgents.searchTxt LIKE '%" + ag.Name + "%' OR"
-		}
-	}
-	stmnt = stmnt[:len(stmnt)-2]
-
-	println(stmnt)
-
-	uwas := []types.UserWithAgant{}
-	err := DB.Select(&uwas, stmnt)
-
-	return uwas, err
 }

@@ -19,22 +19,23 @@ func (*IAgoraAgents) DefaultSelectFields() string {
 	subCategory,
 	area,
 	condition,
-	onlyWithImage, 
+	withImage, 
 	createdAt, 
 	updatedAt
 	`
 }
 
 func (*IAgoraAgents) Create(agent types.AgoraAgent) (int64, error) {
-	fields, vPlacholders := BuildFields([]string{"userId", "searchTxt", "category", "subCategory", "area", "condition", "onlyWithImage"})
+	fields, vPlacholders := BuildFields([]string{"userId", "userEmail", "searchTxt", "category", "subCategory", "area", "condition", "withImage"})
 	res, err := DB.Exec("INSERT INTO agoraAgents ("+fields+") VALUES ("+vPlacholders+")",
 		agent.UserId,
+		agent.UserEmail,
 		agent.SearchTxt,
 		agent.Category,
 		agent.SubCategory,
 		agent.Area,
 		agent.Condition,
-		agent.OnlyWithImage)
+		agent.WithImage)
 
 	if err != nil {
 		// stliteErr, _ := err.(sqlite3.Error)

@@ -1,6 +1,7 @@
 package mail
 
 import (
+	"bez/bez_server/internal/types"
 	"log"
 	"net/smtp"
 )
@@ -30,4 +31,17 @@ func (*IMail) SendMail(to []string, subject string, body string) {
 	if err != nil {
 		log.Fatal(err)
 	}
+}
+
+func (m *IMail) AgoraAgentMail(data types.AgoraAgentResults) {
+	subject := "מוצר חדש פורסם"
+	body := ""
+	body += "שם: " + data.Name + "\r\n"
+	body += "קטגוריה: " + data.Category + "\r\n"
+	body += "תת קטגוריה: " + data.SubCategory + "\r\n"
+	body += "מצב: " + data.Condition + "\r\n"
+	body += "פרטים: " + data.Details + "\r\n"
+	body += "קישור: " + data.Link + "\r\n"
+
+	m.SendMail([]string{data.Email}, subject, body)
 }
