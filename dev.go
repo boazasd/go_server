@@ -27,7 +27,7 @@ func dev() {
 }
 
 func runDev() {
-	if true {
+	if false {
 		dev()
 	}
 }

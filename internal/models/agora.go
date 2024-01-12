@@ -5,7 +5,6 @@ import (
 	"bez/bez_server/internal/utils"
 	"database/sql"
 	"log"
-	"strings"
 )
 
 type IAgoraModel struct {
@@ -106,13 +105,24 @@ func (am *IAgoraModel) UpdateProcessed(args ...interface{}) (sql.Result, error) 
 }
 
 func (am *IAgoraModel) GetForAgentMessage() ([]types.AgoraAgentResults, error) {
-	adFields := am.DefaultSelectFields()
 	qStr := `
 	SELECT 
+
 	agoraAgents.id as agentId,
 	agoraAgents.userId,
 	agoraAgents.userEmail,
-	` + strings.Join(adFields[:], ",") + `
+
+	"agoraData.link",
+	"agoraData.name",
+	"agoraData.details",
+	"agoraData.category",
+	"agoraData.middleCategory",
+	"agoraData.subCategory",
+	"agoraData.condition",
+	"agoraData.image",
+	"agoraData.area",
+	"agoraData.date",
+
 	FROM agoraData
 	inner join agoraAgents
 	on agoraData.name like '%' || agoraAgents.searchTxt || '%'
@@ -131,8 +141,6 @@ func (am *IAgoraModel) GetForAgentMessage() ([]types.AgoraAgentResults, error) {
 	and agoraAgents.area = agoraData.area
 	where agoraData.processed = false
 	`
-
-	println(qStr)
 
 	uwas := []types.AgoraAgentResults{}
 	err := DB.Select(&uwas, qStr)
