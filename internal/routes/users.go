@@ -1,7 +1,6 @@
 package routes
 
 import (
-	"bez/bez_server/internal/models"
 	"bez/bez_server/internal/services"
 	"bez/bez_server/internal/types"
 	"bez/bez_server/internal/utils"
@@ -16,9 +15,6 @@ func usersInit() {
 	authRouters.GET("/users/getOne/:id", getUser, P("super"))
 	authRouters.GET("/users", getUsers, P("super"))
 	authRouters.GET("/users/create", createUser)
-	authRouters.GET("/users/getAgoraAgents", getAgoraAgents)
-	authRouters.GET("/users/createAgent", createAgent)
-	authRouters.POST("/users/createAgentSubmit", createAgentSubmit)
 	authRouters.POST("/users/createSubmit", createUserSubmit)
 	authRouters.POST("/users/update", updateUser)
 	authRouters.DELETE("/users/delete/:id", deleteUser)
@@ -61,57 +57,6 @@ func createUser(c echo.Context) error {
 func createAgent(c echo.Context) error {
 	cmp := templates.CreateAgent(c.Get("user").(types.User))
 	Render(c, cmp)
-	return nil
-}
-
-func getAgoraAgents(c echo.Context) error {
-	id := c.Get("userId").(int64)
-
-	agents, err := services.GetAgoraAgents(id)
-
-	if err != nil {
-		Render(c, templates.Error(err.Error()))
-		return nil
-	}
-
-	html := ""
-	for _, agent := range agents {
-		html += agent.SearchTxt + "<br/>"
-	}
-
-	return c.HTML(200, html)
-}
-
-func createAgentSubmit(c echo.Context) error {
-	id := c.Get("userId").(int64)
-
-	um := models.IUser{}
-	user, err := um.GetById(id)
-
-	if err != nil {
-		return Render(c, templates.Error(err.Error()))
-	}
-
-	agent := types.AgoraAgent{}
-	agent.SearchTxt = c.FormValue("searchTxt")
-	agent.Category = c.FormValue("category")
-	agent.Condition = c.FormValue("condition")
-	agent.Area = c.FormValue("area")
-	agent.WithImage = c.FormValue("withImage") == "on"
-	agent.UserId = id
-	agent.UserEmail = user.Email
-
-	_, err = services.AddAgoraAgent(agent)
-
-	if err != nil {
-		return Render(c, templates.Error(err.Error()))
-	}
-
-	if err != nil {
-		return Render(c, templates.Error(err.Error()))
-	}
-
-	c.Response().Header().Set("HX-Redirect", "/")
 	return nil
 }
 

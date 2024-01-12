@@ -43,6 +43,7 @@ func ScrapeAgora() {
 
 			// "Jan 2, 2006 at 3:04pm (MST)"
 			parsedDate, err := time.Parse("2/1/2006 15:04", date)
+			utcDate := parsedDate.UTC()
 
 			if err != nil {
 				log.Println(err.Error())
@@ -53,7 +54,7 @@ func ScrapeAgora() {
 				Link:           link,
 				Name:           name,
 				Condition:      condition,
-				Date:           parsedDate,
+				Date:           utcDate,
 				Details:        details,
 				Category:       category,
 				MiddleCategory: middleCategory,

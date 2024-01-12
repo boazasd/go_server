@@ -82,6 +82,16 @@ func (w *IAgoraAgents) GetByUserId(id int64) ([]types.AgoraAgent, error) {
 	return agents, nil
 }
 
+func (w *IAgoraAgents) Delete(id int64) error {
+	_, err := DB.Exec("DELETE FROM agoraAgents WHERE id = ?", id)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 // func (w *IAgoraAgents) Update(id int64, agent types.AgoraAgents) (types.AgoraAgents, error) {
 // 	agent.Id = id
 // 	_, err := DB.NamedExec("UPDATE agoraAgents SET agoraAgents = :wishes WHERE id = :id", agent)
