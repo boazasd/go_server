@@ -24,7 +24,6 @@ func ScrapeAgora() {
 		}
 
 		if isExist.Link != "" {
-			log.Println("already exist")
 			return
 		}
 
@@ -65,16 +64,13 @@ func ScrapeAgora() {
 				Processed:      false,
 			}
 
-			id, err := am.CreateAgoraData(agoraData)
+			_, err = am.CreateAgoraData(agoraData)
 			if err != nil {
 				log.Println(err.Error())
 			}
-			log.Println(id)
 		})
-		println(websiteUrl + link + "?toGet=1")
 		c2.Visit(websiteUrl + link)
 	})
 
 	c1.Visit(websiteUrl + "/toGet.asp?dealType=1")
-	log.Println("done")
 }

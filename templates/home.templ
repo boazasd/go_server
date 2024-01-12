@@ -6,7 +6,7 @@ import (
 )
 
 templ Home(user types.User, agents []types.AgoraAgent) {
-	@Main() {
+	@Main(user) {
 		<div dir="rtl">
 			<div class="m-10">
 				<h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">שלום, { user.FirstName } { user.LastName }</h5>

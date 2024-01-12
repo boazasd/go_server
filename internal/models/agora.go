@@ -12,6 +12,7 @@ type IAgoraModel struct {
 
 func (*IAgoraModel) DefaultSelectFields() []string {
 	return []string{
+		"id",
 		"link",
 		"name",
 		"details",
@@ -84,7 +85,6 @@ func (am *IAgoraModel) GetMany(sort string, dir string, limit uint, offset uint)
 	agoraData := []types.AgoraData{}
 	qb := utils.QueryBuilder{Table: "agoraData"}
 	query, err := qb.Select(am.DefaultSelectFields()).Sort(sort, dir).Paginate(limit, offset).Build()
-	log.Println(query)
 
 	if err != nil {
 		return agoraData, err
@@ -100,7 +100,7 @@ func (am *IAgoraModel) GetMany(sort string, dir string, limit uint, offset uint)
 }
 
 func (am *IAgoraModel) UpdateProcessed(args ...interface{}) (sql.Result, error) {
-	res, err := DB.Exec("UPDATE agoraData SET processed = false where processed = true")
+	res, err := DB.Exec("UPDATE agoraData SET processed = true where processed = false")
 	return res, err
 }
 
@@ -112,16 +112,16 @@ func (am *IAgoraModel) GetForAgentMessage() ([]types.AgoraAgentResults, error) {
 	agoraAgents.userId,
 	agoraAgents.userEmail,
 
-	"agoraData.link",
-	"agoraData.name",
-	"agoraData.details",
-	"agoraData.category",
-	"agoraData.middleCategory",
-	"agoraData.subCategory",
-	"agoraData.condition",
-	"agoraData.image",
-	"agoraData.area",
-	"agoraData.date",
+	agoraData.link,
+	agoraData.name,
+	agoraData.details,
+	agoraData.category,
+	agoraData.middleCategory,
+	agoraData.subCategory,
+	agoraData.condition,
+	agoraData.image,
+	agoraData.area,
+	agoraData.date
 
 	FROM agoraData
 	inner join agoraAgents
@@ -133,12 +133,12 @@ func (am *IAgoraModel) GetForAgentMessage() ([]types.AgoraAgentResults, error) {
 		agoraAgents.subCategory in (agoraData.subCategory,"") 
 	)
 	and agoraAgents.condition in (agoraData.condition,"")
+	and agoraAgents.area in (agoraData.area,"")
 	and (
 		agoraData.image != "" 
 		or 
-		agoraAgents.onlyWithImage = false
+		agoraAgents.withImage = false
 	)
-	and agoraAgents.area = agoraData.area
 	where agoraData.processed = false
 	`
 

@@ -47,21 +47,19 @@ func getUsers(c echo.Context) error {
 	users, err := services.GetUsers(sort, dir)
 	if err != nil {
 		errorComponent := templates.Error(err.Error())
-		errorComponent.Render(c.Request().Context(), c.Response().Writer)
+		return Render(c, errorComponent)
 	}
 
-	usersComponent := templates.Users(users)
-	usersComponent.Render(c.Request().Context(), c.Response().Writer)
-	return nil
+	return Render(c, templates.Users(c.Get("user").(types.User), users))
 }
 
 func createUser(c echo.Context) error {
-	cmp := templates.CreateUser()
+	cmp := templates.CreateUser(c.Get("user").(types.User))
 	Render(c, cmp)
 	return nil
 }
 func createAgent(c echo.Context) error {
-	cmp := templates.CreateAgent()
+	cmp := templates.CreateAgent(c.Get("user").(types.User))
 	Render(c, cmp)
 	return nil
 }

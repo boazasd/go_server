@@ -28,27 +28,27 @@ type AgoraAgent struct {
 }
 
 type AgoraData struct {
-	Id             int64
-	Link           string
-	Name           string
-	Details        string
-	City           string
-	Category       string `db:"category"`
-	MiddleCategory string `db:"middleCategory"`
-	SubCategory    string `db:"subCategory"`
-	Condition      string `db:"condition"`
-	Area           string
-	Image          string
-	Processed      bool
-	Date           time.Time
+	Id             int64     `db:"id"`
+	Link           string    `db:"link"`
+	Name           string    `db:"name"`
+	Details        string    `db:"details"`
+	City           string    `db:"city"`
+	Category       string    `db:"category"`
+	MiddleCategory string    `db:"middleCategory"`
+	SubCategory    string    `db:"subCategory"`
+	Condition      string    `db:"condition"`
+	Area           string    `db:"area"`
+	Image          string    `db:"image"`
+	Processed      bool      `db:"processed"`
+	Date           time.Time `db:"date"`
 	CreatedAt      time.Time `db:"createdAt"`
 	UpdatedAt      time.Time `db:"updatedAt"`
 }
 
 type AgoraAgentResults struct {
 	UserId  int64  `db:"userId"`
-	AgentId int64  `db:"agentsId"`
-	Email   string `db:"email"`
+	AgentId int64  `db:"agentId"`
+	Email   string `db:"userEmail"`
 	AgoraData
 }
 
