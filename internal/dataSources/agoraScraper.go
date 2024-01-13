@@ -33,9 +33,9 @@ func ScrapeAgora() {
 
 		c2 := colly.NewCollector()
 		c2.OnHTML("#content", func(e *colly.HTMLElement) {
+			image := e.ChildAttr(".objectsTitleTr td.photoIcon a", "href")
 			details := e.ChildText("table.objectDetails td.details")
 			area := e.ChildText("table.objectDetails td.leftSection ul li:first-child")
-			image := e.ChildAttr("table.objectDetails td.photoIcon a", "href")
 			city := e.ChildText("table.objectDetails td.leftSection ul li:nth-child(2)")
 			category := e.ChildText("#pinkPageTitle span a:first-child")
 			middleCategory := e.ChildText("#pinkPageTitle span a:nth-child(2)")
