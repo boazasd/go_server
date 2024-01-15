@@ -10,3 +10,9 @@ func GetAgoraData(sort string, dir string, pageSize uint, pageNumber uint) ([]ty
 	data, err := am.GetMany(sort, dir, pageSize, pageNumber)
 	return data, err
 }
+
+func DeleteAgoraAgent(id int64) error {
+	am := models.IAgoraAgents{}
+	err := am.Delete(id)
+	return err
+}

@@ -59,12 +59,12 @@ func Init() {
 	})
 
 	noAuthRouters.GET("/login", func(c echo.Context) error {
-		templates.Login().Render(c.Request().Context(), c.Response().Writer)
+		Render(c, templates.Login())
 		return nil
 	})
 
 	router.RouteNotFound("/*", func(c echo.Context) error {
-		templates.NotFound().Render(c.Request().Context(), c.Response().Writer)
+		Render(c, templates.NotFound())
 		return nil
 	})
 

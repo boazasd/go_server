@@ -24,7 +24,6 @@ func ScrapeAgora() {
 		}
 
 		if isExist.Link != "" {
-			log.Println("already exist")
 			return
 		}
 
@@ -34,9 +33,9 @@ func ScrapeAgora() {
 
 		c2 := colly.NewCollector()
 		c2.OnHTML("#content", func(e *colly.HTMLElement) {
+			image := e.ChildAttr(".objectsTitleTr td.photoIcon a", "href")
 			details := e.ChildText("table.objectDetails td.details")
 			area := e.ChildText("table.objectDetails td.leftSection ul li:first-child")
-			image := e.ChildAttr("table.objectDetails td.photoIcon a", "href")
 			city := e.ChildText("table.objectDetails td.leftSection ul li:nth-child(2)")
 			category := e.ChildText("#pinkPageTitle span a:first-child")
 			middleCategory := e.ChildText("#pinkPageTitle span a:nth-child(2)")
@@ -44,6 +43,7 @@ func ScrapeAgora() {
 
 			// "Jan 2, 2006 at 3:04pm (MST)"
 			parsedDate, err := time.Parse("2/1/2006 15:04", date)
+			utcDate := parsedDate.UTC()
 
 			if err != nil {
 				log.Println(err.Error())
@@ -54,7 +54,7 @@ func ScrapeAgora() {
 				Link:           link,
 				Name:           name,
 				Condition:      condition,
-				Date:           parsedDate,
+				Date:           utcDate,
 				Details:        details,
 				Category:       category,
 				MiddleCategory: middleCategory,
@@ -65,16 +65,13 @@ func ScrapeAgora() {
 				Processed:      false,
 			}
 
-			id, err := am.CreateAgoraData(agoraData)
+			_, err = am.CreateAgoraData(agoraData)
 			if err != nil {
 				log.Println(err.Error())
 			}
-			log.Println(id)
 		})
-		println(websiteUrl + link + "?toGet=1")
 		c2.Visit(websiteUrl + link)
 	})
 
 	c1.Visit(websiteUrl + "/toGet.asp?dealType=1")
-	log.Println("done")
 }

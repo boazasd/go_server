@@ -3,7 +3,6 @@ package models
 import (
 	"bez/bez_server/internal/types"
 	"bez/bez_server/internal/utils"
-	"log"
 	"strings"
 )
 
@@ -63,7 +62,6 @@ func (um *IUser) GetMany(sort string, dir string, limit uint, offset uint) ([]ty
 	users := []types.User{}
 	qb := utils.QueryBuilder{Table: "users"}
 	query, err := qb.Select(strings.Split(um.DefaultSelectFields(), ", ")).Sort(sort, dir).Paginate(limit, offset).Build()
-	log.Println(query)
 	if err != nil {
 		return []types.User{}, err
 	}

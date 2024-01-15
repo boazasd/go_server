@@ -1,6 +1,8 @@
 package main
 
 import (
+	"bez/bez_server/internal/dataSources"
+	"bez/bez_server/internal/mail"
 	"bez/bez_server/internal/models"
 	"bez/bez_server/internal/routes"
 	"log"
@@ -27,18 +29,19 @@ func schedule() {
 		for {
 			select {
 			case <-ticker.C:
-				println("tick")
-				// dataSources.ScrapeAgora()
-				// am := models.IAgoraModel{}
-				// am.UpdateProcessed()
-				// data, err := am.GetForAgentMessage()
-				// if err != nil {
-				// 	log.Println(err)
-				// }
-				// m := mail.IMail{}
-				// for _, d := range data {
-				// 	m.AgoraAgentMail(d)
-				// }
+				dataSources.ScrapeAgora()
+				am := models.IAgoraModel{}
+				data, err := am.GetForAgentMessage()
+				log.Println("items for agents", len(data))
+				if err != nil {
+					log.Println(err)
+				}
+				m := mail.IMail{}
+				for _, d := range data {
+					log.Println(d.Email, d.AgentId)
+					go m.AgoraAgentMail(d)
+				}
+				am.UpdateProcessed()
 			case <-quit:
 				println("stop tick")
 				ticker.Stop()
