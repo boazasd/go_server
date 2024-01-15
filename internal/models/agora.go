@@ -125,7 +125,11 @@ func (am *IAgoraModel) GetForAgentMessage() ([]types.AgoraAgentResults, error) {
 
 	FROM agoraData
 	inner join agoraAgents
-	on agoraData.name like '%' || agoraAgents.searchTxt || '%'
+	on (
+		agoraData.name like '%' || agoraAgents.searchTxt || '%'
+		or
+		agoraData.details like '%' || agoraAgents.searchTxt || '%'
+	)
 	and agoraAgents.category in (agoraData.category,"")
 	and (
 		agoraAgents.subCategory in (agoraData.middleCategory,"") 

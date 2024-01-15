@@ -1,0 +1,11 @@
+# put this file /lib/systemd/system/
+[Unit]
+Description=agoraserver
+
+[Service]
+Type=simple
+Restart=always
+RestartSec=5s
+ExecStart=/var/www/agora_server/bez_server
+WorkingDirectory=/var/www/agora_server
+WantedBy=multi-user.target

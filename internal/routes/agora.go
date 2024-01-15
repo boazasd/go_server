@@ -36,7 +36,11 @@ func getAgoraData(c echo.Context) error {
 	}
 
 	if dir == "" {
-		dir = "desc"
+		dir = "DESC"
+	}
+
+	if sort == "" {
+		sort = "date"
 	}
 
 	agoraData, err := services.GetAgoraData(sort, dir, uint(pageSize), uint(pageNumber))
