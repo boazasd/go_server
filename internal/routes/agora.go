@@ -20,12 +20,16 @@ func getAgoraData(c echo.Context) error {
 
 	pageSize, err := strconv.ParseUint(pageSizeStr, 10, 16)
 	if err != nil {
-		pageSize = 10
+		pageSize = 50
 	}
 
 	pageNumber, err := strconv.ParseUint(pageNumberStr, 10, 16)
 	if err != nil {
 		pageNumber = 0
+	}
+
+	if dir == "" {
+		dir = "desc"
 	}
 
 	agoraData, err := services.GetAgoraData(sort, dir, uint(pageSize), uint(pageNumber))
